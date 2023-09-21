@@ -115,7 +115,12 @@ void renderDamageLogUI()
 	if (ImGui::CollapsingHeader("Damage Log"))
 	{
 		if (ImGui::Checkbox("Enabled", &damageLog))
-			DamageLogSwitch();
+		{
+			config.setBool("inGameUI", "damageLog", damageLog);
+			Hooks::SwitchHook("DamageLog", pDamageLog1, damageLog);
+			Hooks::SwitchHook("DamageLog", pDamageLog2, damageLog);
+			Hooks::SwitchHook("DamageLog", pDamageLog3, damageLog);
+		}
 
 		std::pair<UINT32, const char*> targetType[]{ { 0, "Dmg only" },{ 1, "Group id" },{ 2, "Unique id" } };
 		if (ImGui::RadioButtons<UINT32>(&damageLogTargetType, targetType))
