@@ -17,7 +17,7 @@ typedef HRESULT(WINAPI *tDirectInput8Create)(HINSTANCE inst_handle, DWORD versio
 tDirectInput8Create oDirectInput8Create = nullptr;
 
 BYTE *codeBase, *codeEnd, *dataBase, *dataEnd;
-std::ofstream logFile("dinput8.log", std::ios_base::out);
+FILE *logFile = nullptr;
 iniConfig config(".\\dinput8.ini");
 BYTE **pBase = nullptr, **pWorld = nullptr;
 
@@ -50,6 +50,8 @@ void InitHooks()
 
 void Initialize()
 {
+	logFile = fopen("dinput8.log", "w");
+
 	DWORD base = (DWORD)GetModuleHandle(nullptr);
 	auto idh = (PIMAGE_DOS_HEADER)base;
 	auto inh = (PIMAGE_NT_HEADERS)(base + idh->e_lfanew);
@@ -59,7 +61,8 @@ void Initialize()
 	dataBase = (BYTE*)(base + ioh->BaseOfData);
 	dataEnd = dataBase + ioh->SizeOfInitializedData;
 
-	logFile << "MH_Initialize: " << MH_StatusToString(MH_Initialize()) << std::endl;
+	MH_STATUS status = MH_Initialize();
+	LOG("MH_Initialize: %s\n", MH_StatusToString(status));
 	InitHooks();
 
 	string loadLibrary = config.getStr("main", "loadLibrary");
@@ -81,27 +84,45 @@ void Initialize()
 
 void Unitialize()
 {
-	logFile << "MH_DisableHook: " << MH_StatusToString(MH_DisableHook(MH_ALL_HOOKS)) << std::endl;
-	logFile << "MH_Uninitialize: " << MH_StatusToString(MH_Uninitialize()) << std::endl;
+	MH_STATUS status1 = MH_DisableHook(MH_ALL_HOOKS);
+	MH_STATUS status2 = MH_Uninitialize();
+
 	if (logFile)
-		logFile.close();
+	{
+		fprintf(logFile, "MH_DisableHook: %s\n", MH_StatusToString(status1));
+		fprintf(logFile, "MH_Uninitialize: %s\n", MH_StatusToString(status2));
+		fclose(logFile);
+		logFile = nullptr;
+	}
 }
 
 void Hooks::CreateHook(LPCSTR msg, LPVOID pTarget, LPVOID pDetour, LPVOID* ppOriginal, bool enable)
 {
-	logFile << msg << " hook: " << MH_StatusToString(MH_CreateHook(pTarget, pDetour, ppOriginal)) << ", ";
+	MH_STATUS status1 = MH_CreateHook(pTarget, pDetour, ppOriginal);
+
 	if (enable)
-		logFile << MH_StatusToString(MH_EnableHook(pTarget)) << std::endl;
+	{
+		MH_STATUS status2 = MH_EnableHook(pTarget);
+		LOG("%s hook: %s, %s\n", msg, MH_StatusToString(status1), MH_StatusToString(status2));
+	}
 	else
-		logFile << "disabled" << std::endl;
+	{
+		LOG("%s hook: %s, disabled\n", msg, MH_StatusToString(status1));
+	}
 }
 
 void Hooks::SwitchHook(LPCSTR msg, LPVOID pTarget, bool enable)
 {
 	if (enable)
-		logFile << msg << " enable: " << MH_StatusToString(MH_EnableHook(pTarget)) << std::endl;
+	{
+		MH_STATUS status = MH_EnableHook(pTarget);
+		LOG("%s enable: %s\n", msg, MH_StatusToString(status));
+	}
 	else
-		logFile << msg << " disable: " << MH_StatusToString(MH_DisableHook(pTarget)) << std::endl;
+	{
+		MH_STATUS status = MH_DisableHook(pTarget);
+		LOG("%s disable: %s\n", msg, MH_StatusToString(status));
+	}
 }
 
 bool Hooks::FindSignature(LPCSTR msg, BYTE* signature, size_t len, BYTE** offset) { return Find(msg, codeBase, codeEnd, signature, len, offset); }
@@ -116,12 +137,12 @@ bool Hooks::Find(LPCSTR msg, BYTE* start, BYTE* end, BYTE *signature, size_t len
 				break;
 			if (i == len - 1)
 			{
-				logFile << msg << " pointer: " << (LPVOID)*offset << std::endl;
+				LOG("%s pointer: %08X\n", msg, (UINT)*offset);
 				return true;
 			}
 		}
 	}
-	logFile << msg << " pointer: not found" << std::endl;
+	LOG("%s pointer: not found\n", msg);
 	return false;
 }
 

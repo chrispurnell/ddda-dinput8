@@ -128,7 +128,7 @@ void __declspec(naked) HFallHeight()
 }
 
 bool movementSpeedDebug = false;
-void __stdcall HMovementSpeedDebug(LPVOID animId) { logFile << animId << std::endl; }
+void __stdcall HMovementSpeedDebug(LPVOID animId) { LOG("%08X\n", (UINT)animId); }
 
 float movementSpeed;
 LPBYTE pMovementSpeed, oMovementSpeed;

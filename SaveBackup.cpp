@@ -5,16 +5,14 @@ string saveDir, savePath;
 int saveLimit;
 void printError(LPCSTR msg, DWORD error)
 {
-	logFile << msg << ": ";
 	if (error == ERROR_FILE_NOT_FOUND)
-		logFile << "file not found";
+		LOG("%s: file not found\n", msg);
 	else if (error == ERROR_PATH_NOT_FOUND)
-		logFile << "path not found";
+		LOG("%s: path not found\n", msg);
 	else if (error == ERROR_INVALID_NAME)
-		logFile << "invalid path";
+		LOG("%s: invalid path\n", msg);
 	else
-		logFile << (LPVOID)error;
-	logFile << std::endl;
+		LOG("%s: %08X\n", msg, (UINT)error);
 }
 
 void clearBackups()
@@ -43,7 +41,7 @@ void clearBackups()
 	{
 		string file = saveDir + files[i].second;
 		DeleteFile(file.c_str());
-		logFile << "Backup deleted: " << file << std::endl;
+		LOG("Backup deleted: %s\n", file.c_str());
 	}
 }
 
@@ -62,7 +60,7 @@ void __stdcall handleSave()
 
 		if (CopyFile(savePath.c_str(), backupPath.c_str(), FALSE))
 		{
-			logFile << "Backup created: " << backupPath.c_str() << std::endl;
+			LOG("Backup created: %s\n", backupPath.c_str());
 			if (saveLimit > 0)
 				clearBackups();
 		}
@@ -112,15 +110,15 @@ bool findSavePath()
 	if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 	{
 		if (configDir.empty())
-			logFile << "SaveBackup path: NOT FOUND, SET MANUALLY IN DINPUT8.INI" << std::endl;
+			LOG("SaveBackup path: NOT FOUND, SET MANUALLY IN DINPUT8.INI\n");
 		else
-			logFile << "SaveBackup path: INVALID PATH - " << saveDir << std::endl;
+			LOG("SaveBackup path: INVALID PATH - %s\n", saveDir.c_str());
 		return false;
 	}
 
 	saveDir.push_back('\\');
 	savePath = saveDir + "ddda.sav";
-	logFile << "SaveBackup path: " << savePath << std::endl;
+	LOG("SaveBackup path: %s\n", savePath.c_str());
 	return true;
 }
 
@@ -128,7 +126,7 @@ void Hooks::SaveBackup()
 {
 	if (!config.getBool("main", "backupSaves", false) || !findSavePath())
 	{
-		logFile << "SaveBackup: disabled" << std::endl;
+		LOG("SaveBackup: disabled\n");
 		return;
 	}
 

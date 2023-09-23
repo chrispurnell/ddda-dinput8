@@ -119,7 +119,7 @@ void Hooks::InGameClock()
 
 	clockEnabled = config.getBool("inGameUI", "clock", false);
 	if (!clockEnabled)
-		logFile << "InGameClock: disabled" << std::endl;
+		LOG("InGameClock: disabled\n");
 
 	HotkeysAdd("keyClock", VK_NUMPAD5, InGameClockSwitch);
 	HotkeysAdd("keyClockMinDec", VK_NUMPAD4, []() { InGameClockDec(1); });

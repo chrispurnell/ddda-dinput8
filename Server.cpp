@@ -22,7 +22,7 @@ void Hooks::Server()
 		host = config.getStr("server", "host", "dune.dragonsdogma.com");
 		hostPtr = host.c_str();
 		port = config.getUInt("server", "port", 12501);
-		logFile << "Server: using " << host.c_str() << ":" << port << std::endl;
+		LOG("Server: using %s:%u\n", host.c_str(), port);
 
 		BYTE signature[] =
 		{
@@ -38,5 +38,5 @@ void Hooks::Server()
 			CreateHook("sDDCaProto::connect", pOffset, (LPVOID)HConnect, &oConnect);
 	}
 	else
-		logFile << "Server: disabled" << std::endl;
+		LOG("Server: disabled\n");
 }

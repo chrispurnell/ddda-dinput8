@@ -8,7 +8,7 @@ iniConfig::iniConfig(LPCSTR fileName)
 	SetLastError(ERROR_SUCCESS);
 	GetPrivateProfileSectionNamesA(buffer, sizeof buffer, fileName);
 	if (GetLastError() == ERROR_FILE_NOT_FOUND)
-		logFile << "Config: file not found!" << std::endl;
+		LOG("Config: file not found!\n");
 }
 
 bool iniConfig::get(LPCSTR section, LPCSTR key, bool allowEmpty)
@@ -35,18 +35,12 @@ std::vector<int> iniConfig::getSectionInts(LPCSTR section)
 	return keys;
 }
 
-template <typename T>
-T printError(LPCSTR section, LPCSTR key, T defValue)
-{
-	logFile << "Config: " << section << "->" << key << " has invalid value, using default (" << defValue << ")" << std::endl;
-	return defValue;
-}
-
 string iniConfig::getStr(LPCSTR section, LPCSTR key, string defValue)
 {
 	if (get(section, key, defValue.empty()))
 		return buffer;
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%s)\n", section, key, defValue.c_str());
+	return defValue;
 }
 
 int iniConfig::getInt(LPCSTR section, LPCSTR key, int defValue)
@@ -57,7 +51,8 @@ int iniConfig::getInt(LPCSTR section, LPCSTR key, int defValue)
 			return std::stoi(buffer, nullptr, 0);
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%d)\n", section, key, defValue);
+	return defValue;
 }
 
 unsigned int iniConfig::getUInt(LPCSTR section, LPCSTR key, unsigned defValue)
@@ -68,7 +63,8 @@ unsigned int iniConfig::getUInt(LPCSTR section, LPCSTR key, unsigned defValue)
 			return std::stoul(buffer, nullptr, 0);
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%u)\n", section, key, defValue);
+	return defValue;
 }
 
 float iniConfig::getFloat(LPCSTR section, LPCSTR key, float defValue)
@@ -79,7 +75,8 @@ float iniConfig::getFloat(LPCSTR section, LPCSTR key, float defValue)
 			return std::stof(buffer, nullptr);
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%.1f)\n", section, key, defValue);
+	return defValue;
 }
 
 double iniConfig::getDouble(LPCSTR section, LPCSTR key, double defValue)
@@ -90,7 +87,8 @@ double iniConfig::getDouble(LPCSTR section, LPCSTR key, double defValue)
 			return std::stod(buffer, nullptr);
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%.1f)\n", section, key, defValue);
+	return defValue;
 }
 
 bool iniConfig::getBool(LPCSTR section, LPCSTR key, bool defValue)
@@ -106,7 +104,8 @@ bool iniConfig::getBool(LPCSTR section, LPCSTR key, bool defValue)
 		}
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%s)\n", section, key, defValue ? "on": "off");
+	return defValue;
 }
 
 int iniConfig::getEnum(LPCSTR section, LPCSTR key, int defValue, std::pair<int, LPCSTR> map[], int size)
@@ -121,7 +120,8 @@ int iniConfig::getEnum(LPCSTR section, LPCSTR key, int defValue, std::pair<int, 
 		}
 	}
 	catch (...) {}
-	return printError(section, key, defValue);
+	LOG("Config: %s->%s has invalid value, using default (%d)\n", section, key, defValue);
+	return defValue;
 }
 
 std::vector<int> iniConfig::getInts(LPCSTR section, LPCSTR key)
@@ -141,7 +141,7 @@ std::vector<int> iniConfig::getInts(LPCSTR section, LPCSTR key)
 		}
 	}
 	catch (...) {}
-	printError(section, key, string());
+	LOG("Config: %s->%s has invalid value, using default ()\n", section, key);
 	return std::vector<int>();
 }
 
@@ -162,7 +162,7 @@ std::vector<float> iniConfig::getFloats(LPCSTR section, LPCSTR key)
 		}
 	}
 	catch (...) {}
-	printError(section, key, string());
+	LOG("Config: %s->%s has invalid value, using default ()\n", section, key);
 	return std::vector<float>();
 }
 

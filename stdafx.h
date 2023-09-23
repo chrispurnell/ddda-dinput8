@@ -4,8 +4,8 @@
 
 #include <windows.h>
 
+#include <stdio.h>
 #include <string>
-#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <array>

@@ -26,7 +26,7 @@ void onCreateDevice(LPDIRECT3DDEVICE9 pD3DDevice)
 		ImFont **font = std::get<2>(fonts[i]);
 		*font = ImGui::GetIO().Fonts->AddFontFromFileTTF(syspath, std::get<1>(fonts[i]));
 		if (!*font)
-			logFile << "InGameClock: failed to load font - " << syspath << std::endl;
+			LOG("InGameClock: failed to load font - %s\n", syspath);
 	}
 }
 
@@ -84,7 +84,7 @@ bool Hooks::InGameUI()
 {
 	if (!config.getBool("inGameUI", "enabled", false))
 	{
-		logFile << "InGameUI: disabled" << std::endl;
+		LOG("InGameUI: disabled\n");
 		return false;
 	}
 

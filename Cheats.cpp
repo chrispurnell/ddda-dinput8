@@ -264,7 +264,7 @@ struct buffInfo
 };
 
 bool buffModsLog = false;
-void __stdcall HBuffmodsDebug(int buffId) { logFile << buffId << std::endl; }
+void __stdcall HBuffmodsDebug(int buffId) { LOG("%d\n", buffId); }
 
 bool buffMods;
 buffInfo buffModsValues[0x30] = {};
@@ -770,7 +770,7 @@ void Hooks::Cheats()
 		if (FindSignature("Cheat (shareWeaponSkills8)", sig8, &pOffset)) Set<BYTE>(pOffset, { 0xEB });
 	}
 	else
-		logFile << "Cheat (shareWeaponSkills): disabled" << std::endl;
+		LOG("Cheat (shareWeaponSkills): disabled\n");
 
 	if ((ignoreEquipVocation = config.getBool("cheats", "ignoreEquipVocation", false)))
 	{
@@ -793,7 +793,7 @@ void Hooks::Cheats()
 		if (FindSignature("Cheat (ignoreEquipVocation8)", sig8, &pOffset)) Set<BYTE>(pOffset, { 0x90, 0x90 });
 	}
 	else
-		logFile << "Cheat (ignoreEquipVocation): disabled" << std::endl;
+		LOG("Cheat (ignoreEquipVocation): disabled\n");
 
 	if ((ignoreSkillVocation = config.getBool("cheats", "ignoreSkillVocation", false)))
 	{
@@ -808,7 +808,7 @@ void Hooks::Cheats()
 		if (FindSignature("Cheat (ignoreSkillVocation4)", sig4, &pOffset)) Set<BYTE>(pOffset, { 0x90, 0x90, 0x8B, 0xC1 });
 	}
 	else
-		logFile << "Cheat (ignoreSkillVocation): disabled" << std::endl;
+		LOG("Cheat (ignoreSkillVocation): disabled\n");
 
 	InGameUIAdd(renderCheatsUI);
 }

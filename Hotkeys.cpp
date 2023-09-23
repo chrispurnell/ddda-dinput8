@@ -111,5 +111,5 @@ void Hooks::Hotkeys()
 			pSave = (BYTE**)*(LPDWORD)(pOffset + 2);
 	}
 	else
-		logFile << "Hotkeys: disabled" << std::endl;
+		LOG("Hotkeys: disabled\n");
 }
