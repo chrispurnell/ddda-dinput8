@@ -74,33 +74,18 @@ float mWeight;
 LPBYTE pWeight, oWeight;
 void __declspec(naked) HWeight()
 {
-	asm("movss	%0,%%xmm0" : : "m"(mWeight));
-	asm("mulss	%xmm0,%xmm5");
+	asm("mulss	%0,%%xmm5" : : "m"(mWeight));
 	asm("jmp	*%0" : : "m"(oWeight));
 }
 
-bool realTime;
 float mTimeInterval;
-UINT rTimeInterval;
+float fTimeInterval;
 LPBYTE pTimeInterval, oTimeInterval;
 void __declspec(naked) HTimeInterval()
 {
-	asm("cmpl	$0,8(%esp)");
-	asm("je 	2f");
-	asm("cmpb	$0,%0" : : "m"(realTime));
-	asm("je 	1f");
-	asm("mov	$0x11,%eax");
-	asm("mov	%eax,8(%esp)");
-	asm("jmp	2f");
-
-	asm("\n1:");
-	asm("fildl	8(%esp)");
-	asm("fmuls	%0" : : "m"(mTimeInterval));
-	asm("fistpl	%0" : : "m"(rTimeInterval));
-	asm("mov	%0,%%eax" : : "m"(rTimeInterval));
-	asm("mov	%eax,8(%esp)");
-
-	asm("\n2:");
+	asm("movss	0x4(%esp),%xmm0");
+	asm("mulss	%0,%%xmm0" : : "m"(fTimeInterval));
+	asm("movss	%xmm0,0x4(%esp)");
 	asm("jmp	*%0" : : "m"(oTimeInterval));
 }
 
@@ -572,7 +557,7 @@ void renderCheatsUI()
 		if (ImGui::InputFloatEx("Time speed", &mTimeInterval, 0.1f, -1.0f, 60.0f))
 		{
 			config.setFloat("cheats", "timeInterval", mTimeInterval);
-			realTime = mTimeInterval == 0;
+			fTimeInterval = mTimeInterval < 0.005f ? 1.0f / 30.0f : mTimeInterval;
 			if (prevState != mTimeInterval >= 0)
 				Hooks::SwitchHook("Cheat (timeInterval)", pTimeInterval, mTimeInterval >= 0);
 		}
@@ -654,11 +639,11 @@ void Hooks::Cheats()
 		CreateHook("Cheat (weight)", pWeight, (LPVOID)HWeight, &oWeight, mWeight >= 0);
 	}
 
-	BYTE sigTime[] = { 0x8B, 0x44, 0x24, 0x08, 0x01, 0x86, 0x68, 0x87, 0x0B, 0x00 };
+	BYTE sigTime[] = { 0xD9, 0x44, 0x24, 0x04, 0xD9, 0x7C, 0x24, 0x04, 0x0F, 0xB7, 0x44, 0x24, 0x04 };
 	if (FindSignature("Cheat (timeInterval)", sigTime, &pTimeInterval))
 	{
 		mTimeInterval = config.getFloat("cheats", "timeInterval", -1);
-		realTime = mTimeInterval == 0;
+		fTimeInterval = mTimeInterval < 0.005f ? 1.0f / 30.0f : mTimeInterval;
 		CreateHook("Cheat (timeInterval)", pTimeInterval, (LPVOID)HTimeInterval, &oTimeInterval, mTimeInterval >= 0);
 	}
 
