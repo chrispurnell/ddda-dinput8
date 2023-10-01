@@ -8,8 +8,8 @@ LDFLAGS=-s $(OPT) -Wl,--gc-sections,--kill-at
 LIBS=$(IG_LIB) $(MH_LIB) -ld3dx9_43
 
 LIB=dinput8.dll
-OFILES=DamageLog.o InGameUI.o ItemEditor.o Misc.o Cheats.o d3d9.o Hotkeys.o InGameClock.o dinput8.o iniConfig.o PlayerStats.o Portcrystals.o SaveBackup.o Server.o stdafx.o WeaponSets.o 
-CFILES=DamageLog.cpp InGameUI.cpp ItemEditor.cpp Misc.cpp Cheats.cpp d3d9.cpp Hotkeys.cpp InGameClock.cpp dinput8.cpp iniConfig.cpp PlayerStats.cpp Portcrystals.cpp SaveBackup.cpp Server.cpp stdafx.cpp WeaponSets.cpp
+OFILES=DamageLog.o InGameUI.o ItemEditor.o Misc.o Cheats.o d3d9.o Hotkeys.o InGameClock.o dinput8.o iniConfig.o PlayerStats.o Portcrystals.o SaveBackup.o Server.o WeaponSets.o Lists.o
+CFILES=DamageLog.cpp InGameUI.cpp ItemEditor.cpp Misc.cpp Cheats.cpp d3d9.cpp Hotkeys.cpp InGameClock.cpp dinput8.cpp iniConfig.cpp PlayerStats.cpp Portcrystals.cpp SaveBackup.cpp Server.cpp WeaponSets.cpp Lists.cpp
 
 MH_LIB=MinHook/MinHook.a
 MH_OFILES=MinHook/hook.o MinHook/trampoline.o MinHook/buffer.o MinHook/hde32.o

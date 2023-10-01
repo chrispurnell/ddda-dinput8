@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "WeaponSets.h"
 #include "ItemEditor.h"
+#include "dinput8.h"
+#include "Hotkeys.h"
+#include "InGameUI.h"
+#include "Lists.h"
 
 LPBYTE getEquippedSkillsBaseCall, emptyEquippedSkillsCall, setEquippedSkillsCall;
 LPBYTE getSetEquippedSkillsFilesReadyFlagCall, getEquippedSkillsFilesBaseCall, setEquippedSkillsFilesCall;

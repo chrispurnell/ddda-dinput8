@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "ItemEditor.h"
+#include "dinput8.h"
+#include "InGameUI.h"
+#include "Lists.h"
 
 bool pItemChanged = true;
 LPBYTE Hooks::pItem;

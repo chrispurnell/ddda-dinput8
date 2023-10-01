@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Hotkeys.h"
+#include "dinput8.h"
 
 INPUT keyInput = { INPUT_KEYBOARD, {} };
 DWORD menuPause;

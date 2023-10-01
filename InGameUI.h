@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ImGui/imgui.h"
+
 namespace Hooks
 {
 	bool InGameUI();

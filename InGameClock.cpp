@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "InGameClock.h"
+#include "dinput8.h"
+#include "InGameUI.h"
 #include "ImGui/imgui_internal.h"
 #include "WeaponSets.h"
+#include "Hotkeys.h"
 
 bool clockEnabled;
 ImFont *clockFont;

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "d3d9.h"
+#include "dinput8.h"
 
 void(*onLostDevice)();
 void(*onResetDevice)();

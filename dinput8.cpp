@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dinput8.h"
 #include "MinHook/MinHook.h"
 #include "d3d9.h"
 #include "SaveBackup.h"
@@ -12,6 +13,7 @@
 #include "Portcrystals.h"
 #include "WeaponSets.h"
 #include "DamageLog.h"
+#include "InGameUI.h"
 
 typedef HRESULT(WINAPI *tDirectInput8Create)(HINSTANCE inst_handle, DWORD version, const IID& r_iid, LPVOID* out_wrapper, LPUNKNOWN p_unk);
 tDirectInput8Create oDirectInput8Create = nullptr;

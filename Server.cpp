@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Server.h"
+#include "dinput8.h"
 
 string host;
 const char *hostPtr;

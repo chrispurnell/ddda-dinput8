@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Portcrystals.h"
+#include "dinput8.h"
+#include "InGameUI.h"
 
 LPVOID oMapClosest, oMapCursor;
 float pMapClosest[3] = { 0 }, pMapCursor[3] = { 0 };

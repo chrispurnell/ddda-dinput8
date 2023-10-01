@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "DamageLog.h"
+#include "dinput8.h"
+#include "Hotkeys.h"
+#include "InGameUI.h"
 #include "ImGui/imgui_internal.h"
 
 struct damageLogInfo

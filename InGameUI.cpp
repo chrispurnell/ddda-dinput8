@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "InGameUI.h"
 #include "d3d9.h"
+#include "dinput8.h"
 #include "Hotkeys.h"
 #include "ImGui/imgui_impl_dx9.h"
 #include "ImGui/imgui_internal.h"

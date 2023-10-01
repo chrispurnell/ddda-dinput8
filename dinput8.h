@@ -1,5 +1,7 @@
 #pragma once
 
+#include "iniConfig.h"
+
 #define LOG(...) do { if (logFile) { fprintf(logFile, __VA_ARGS__); fflush(logFile); } } while (false)
 
 extern FILE *logFile;

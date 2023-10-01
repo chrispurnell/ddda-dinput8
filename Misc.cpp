@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "Misc.h"
+#include "dinput8.h"
+#include "InGameUI.h"
 
 LPBYTE pCharCustomization, oCharCustomization;
 void __declspec(naked) HCharCustomization()

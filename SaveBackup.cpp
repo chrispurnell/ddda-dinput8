@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "SaveBackup.h"
+#include "dinput8.h"
+#include "steam_api.h"
 
 string saveDir, savePath;
 int saveLimit;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Lists.h"
 
 const std::vector<std::pair<int, LPCSTR>> Hooks::ListStatus =
 {

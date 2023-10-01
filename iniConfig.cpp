@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "iniConfig.h"
+#include "dinput8.h"
 
 iniConfig::iniConfig(LPCSTR fileName)
 {

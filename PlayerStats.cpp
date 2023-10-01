@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "PlayerStats.h"
+#include "dinput8.h"
+#include "InGameUI.h"
+#include "Lists.h"
 
 struct levelInfo
 {
