@@ -7,7 +7,8 @@ class iniConfig
 
 	bool get(LPCSTR section, LPCSTR key, bool allowEmpty = false);
 public:
-	explicit iniConfig(LPCSTR fileName);
+	explicit constexpr iniConfig(LPCSTR file) : buffer(), fileName(file) { }
+	void init();
 
 	void removeKey(LPCSTR section, LPCSTR key) const;
 	std::vector<int> getSectionInts(LPCSTR section);

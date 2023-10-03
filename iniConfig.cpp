@@ -2,10 +2,8 @@
 #include "iniConfig.h"
 #include "dinput8.h"
 
-iniConfig::iniConfig(LPCSTR fileName)
+void iniConfig::init()
 {
-	this->fileName = fileName;
-
 	SetLastError(ERROR_SUCCESS);
 	GetPrivateProfileSectionNamesA(buffer, sizeof buffer, fileName);
 	if (GetLastError() == ERROR_FILE_NOT_FOUND)

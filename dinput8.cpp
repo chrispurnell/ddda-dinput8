@@ -53,6 +53,7 @@ void InitHooks()
 void Initialize()
 {
 	logFile = fopen("dinput8.log", "w");
+	config.init();
 
 	DWORD base = (DWORD)GetModuleHandle(nullptr);
 	auto idh = (PIMAGE_DOS_HEADER)base;
