@@ -2,8 +2,10 @@ CC=i686-w64-mingw32-gcc
 CXX=i686-w64-mingw32-g++
 AR=i686-w64-mingw32-ar
 OPT=-O2 -fno-math-errno -ffunction-sections
-CFLAGS=$(OPT)
-CXXFLAGS=-std=c++11 $(OPT)
+WARN=-Wall
+WARNXX=$(WARN) -Wno-class-memaccess
+CFLAGS=-std=c11 $(OPT) $(WARN)
+CXXFLAGS=-std=c++11 $(OPT) $(WARNXX)
 LDFLAGS=-s $(OPT) -Wl,--gc-sections,--kill-at
 LIBS=$(IG_LIB) $(MH_LIB) -ld3dx9_43
 

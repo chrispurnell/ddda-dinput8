@@ -6,6 +6,11 @@
 #include "InGameUI.h"
 #include "Lists.h"
 
+char Hooks::weaponSetsText[16] = {};
+
+namespace
+{
+
 LPBYTE getEquippedSkillsBaseCall, emptyEquippedSkillsCall, setEquippedSkillsCall;
 LPBYTE getSetEquippedSkillsFilesReadyFlagCall, getEquippedSkillsFilesBaseCall, setEquippedSkillsFilesCall;
 LPVOID pSomeBase2, pSomeBase3;
@@ -52,7 +57,6 @@ size_t weaponSetsSkillsC = 0, weaponSetsWeaponsC = 0, weaponSetsTimeout;
 CRITICAL_SECTION weaponSetsSync;
 LARGE_INTEGER timerFrequency, timerLast = {}, timerCurrent = {};
 bool weaponSetsRefresh = false;
-char Hooks::weaponSetsText[16] = {};
 void WeaponSetsSkills()
 {
 	if (weaponSetsSkills.size() == 0)
@@ -278,6 +282,8 @@ void renderWeaponSetsUI()
 			config.setInts("weaponSets", "weapons", list);
 		}
 	}
+}
+
 }
 
 void Hooks::WeaponSets()

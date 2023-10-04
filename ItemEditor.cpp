@@ -4,8 +4,12 @@
 #include "InGameUI.h"
 #include "Lists.h"
 
-bool pItemChanged = true;
 LPBYTE Hooks::pItem;
+
+namespace
+{
+
+bool pItemChanged = true;
 LPVOID oItemIDRead;
 void __declspec(naked) HItemIDRead()
 {
@@ -42,7 +46,7 @@ void renderItemEditorUI()
 		ImGui::InputFloatEx("Weight", *(float**)(pItem + 0x04) + 0x44 / 4, 0.1f, 0.0f, 100.0f, -1);
 		UINT16 itemFlags = *(UINT16*)(pItem + 0x20) & StarMask;
 		if (ImGui::ComboEnum<UINT16>("Quality", &itemFlags, ListItemStarType))
-			*(UINT16*)(pItem + 0x20) = *(UINT16*)(pItem + 0x20) & ~StarMask | itemFlags;
+			*(UINT16*)(pItem + 0x20) = (*(UINT16*)(pItem + 0x20) & ~StarMask) | itemFlags;
 
 		ImGui::Separator();
 		if (ImGui::TreeNode("(for master rings)"))
@@ -66,6 +70,8 @@ void renderItemEditorUI()
 			ImGui::TreePop();
 		}
 	}
+}
+
 }
 
 void Hooks::ItemEditor()

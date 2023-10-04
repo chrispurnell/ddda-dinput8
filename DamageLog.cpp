@@ -5,6 +5,9 @@
 #include "InGameUI.h"
 #include "ImGui/imgui_internal.h"
 
+namespace
+{
+
 struct damageLogInfo
 {
 	LPVOID targetBase;
@@ -60,7 +63,6 @@ void __declspec(naked) HDamageLog3()
 
 bool damageLog = false;
 UINT32 damageLogTargetType;
-ImFont *damageLogFont = nullptr;
 ImVec2 damageLogPosition, damageLogSize;
 ImVec4 damageLogForeground, damageLogBackground;
 ImGuiWindowFlags damageLogFlags = ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar;
@@ -89,9 +91,9 @@ void renderDamageLog(bool getsInput)
 			}
 
 			if (damageLogTargetType == 2)
-				ImGui::Text("%08X -> %.2f", damageLogBuffer[i].targetBase, damageLogBuffer[i].damage);
+				ImGui::Text("%08X -> %.2f", (UINT32)damageLogBuffer[i].targetBase, damageLogBuffer[i].damage);
 			else if (damageLogTargetType == 1)
-				ImGui::Text("%02hhX -> %.2f", damageLogBuffer[i].targetId, damageLogBuffer[i].damage);
+				ImGui::Text("%02X -> %.2f", damageLogBuffer[i].targetId, damageLogBuffer[i].damage);
 			else
 				ImGui::Text("%.2f", damageLogBuffer[i].damage);
 		}
@@ -149,6 +151,8 @@ void renderDamageLogUI()
 			}
 		}
 	}
+}
+
 }
 
 void Hooks::DamageLog()

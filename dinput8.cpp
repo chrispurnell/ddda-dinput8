@@ -15,13 +15,17 @@
 #include "DamageLog.h"
 #include "InGameUI.h"
 
+FILE *logFile = nullptr;
+iniConfig config(".\\dinput8.ini");
+BYTE **pBase = nullptr, **pWorld = nullptr;
+
+namespace
+{
+
 typedef HRESULT(WINAPI *tDirectInput8Create)(HINSTANCE inst_handle, DWORD version, const IID& r_iid, LPVOID* out_wrapper, LPUNKNOWN p_unk);
 tDirectInput8Create oDirectInput8Create = nullptr;
 
 BYTE *codeBase, *codeEnd, *dataBase, *dataEnd;
-FILE *logFile = nullptr;
-iniConfig config(".\\dinput8.ini");
-BYTE **pBase = nullptr, **pWorld = nullptr;
 
 void InitHooks()
 {
@@ -97,6 +101,8 @@ void Unitialize()
 		fclose(logFile);
 		logFile = nullptr;
 	}
+}
+
 }
 
 void Hooks::CreateHook(LPCSTR msg, LPVOID pTarget, LPVOID pDetour, LPVOID* ppOriginal, bool enable)

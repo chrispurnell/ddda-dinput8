@@ -6,6 +6,9 @@
 #include "ImGui/imgui_impl_dx9.h"
 #include "ImGui/imgui_internal.h"
 
+namespace
+{
+
 std::vector<void(*)()> content;
 std::vector<void(*)(bool)> windows;
 std::vector<std::tuple<LPCSTR, float, ImFont**>> fonts;
@@ -80,6 +83,8 @@ LRESULT CALLBACK inGameUIInit(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	if (Hooks::D3D9(onCreateDevice, onLostDevice, onResetDevice, onEndScene))
 		Hooks::HotkeysHandler(inGameUIEvent);
 	return 0;
+}
+
 }
 
 bool Hooks::InGameUI()

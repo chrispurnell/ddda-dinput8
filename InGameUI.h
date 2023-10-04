@@ -50,7 +50,7 @@ namespace ImGui
 
 		int currentIndex = -1;
 		for (size_t i = 0; i < items.size(); i++)
-			if (items[i].first == *(T*)v)
+			if ((T)items[i].first == *(T*)v)
 			{
 				currentIndex = i;
 				break;

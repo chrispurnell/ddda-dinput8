@@ -2,6 +2,9 @@
 #include "Hotkeys.h"
 #include "dinput8.h"
 
+namespace
+{
+
 INPUT keyInput = { INPUT_KEYBOARD, {} };
 DWORD menuPause;
 void(*keys[0x100])() = { nullptr };
@@ -65,6 +68,8 @@ LRESULT CALLBACK HWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	return oWndProc(hwnd, msg, wParam, lParam);
+}
+
 }
 
 void Hooks::HotkeysAdd(LPCSTR name, WORD defKey, void(*func)())

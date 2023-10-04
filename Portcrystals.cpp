@@ -3,6 +3,9 @@
 #include "dinput8.h"
 #include "InGameUI.h"
 
+namespace
+{
+
 LPVOID oMapClosest, oMapCursor;
 float pMapClosest[3] = { 0 }, pMapCursor[3] = { 0 };
 void __declspec(naked) HMapClosest()
@@ -63,6 +66,8 @@ void renderPortcrystalsUI()
 			ImGui::PopID();
 		}
 	}
+}
+
 }
 
 void Hooks::Portcrystals()

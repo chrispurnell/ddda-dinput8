@@ -2,6 +2,9 @@
 #include "Server.h"
 #include "dinput8.h"
 
+namespace
+{
+
 string host;
 const char *hostPtr;
 UINT16 port;
@@ -14,6 +17,8 @@ void __declspec(naked) HConnect()
 	asm("push	%0" : : "m"(hostPtr));
 	asm("sub	$4,%esp");
 	asm("jmp	*%0" : : "m"(oConnect));
+}
+
 }
 
 void Hooks::Server()

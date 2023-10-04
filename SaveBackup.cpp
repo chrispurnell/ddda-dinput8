@@ -3,6 +3,9 @@
 #include "dinput8.h"
 #include "steam_api.h"
 
+namespace
+{
+
 string saveDir, savePath;
 int saveLimit;
 void printError(LPCSTR msg, DWORD error)
@@ -122,6 +125,8 @@ bool findSavePath()
 	savePath = saveDir + "ddda.sav";
 	LOG("SaveBackup path: %s\n", savePath.c_str());
 	return true;
+}
+
 }
 
 void Hooks::SaveBackup()

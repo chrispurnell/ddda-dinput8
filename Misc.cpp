@@ -6,6 +6,9 @@
 #include "dinput8.h"
 #include "InGameUI.h"
 
+namespace
+{
+
 LPBYTE pCharCustomization, oCharCustomization;
 void __declspec(naked) HCharCustomization()
 {
@@ -244,7 +247,7 @@ void renderMiscUI()
 		if (ImGui::InputFloatEx("Fall height", &fallHeight, 10.0f, -FLT_MAX, 0.0f))
 		{
 			config.setFloat("main", "fallHeight", fallHeight);
-			if (prevState != fallHeight < 0)
+			if (prevState != (fallHeight < 0))
 				Hooks::SwitchHook("FallHeight", pFallHeight, fallHeight < 0);
 		}
 
@@ -252,7 +255,7 @@ void renderMiscUI()
 		if (ImGui::InputFloatEx("Movement speed", &movementSpeed, 0.1f, -1.0f))
 		{
 			config.setFloat("main", "movementSpeed", movementSpeed);
-			if (prevState != movementSpeed >= 0)
+			if (prevState != (movementSpeed >= 0))
 				Hooks::SwitchHook("MovementSpeed", pMovementSpeed, movementSpeed >= 0);
 		}
 		ImGui::PopItemWidth();
@@ -285,6 +288,8 @@ void renderMiscUI()
 			ImGui::TreePop();
 		}
 	}
+}
+
 }
 
 void Hooks::Misc()

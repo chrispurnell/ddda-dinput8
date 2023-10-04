@@ -4,6 +4,9 @@
 #include "InGameUI.h"
 #include "Lists.h"
 
+namespace
+{
+
 struct levelInfo
 {
 	LPVOID Zero;
@@ -401,6 +404,8 @@ void renderStatsUI()
 	renderStatsLearnedSkills("Pawn 1", 0x7F0 + 0x1660, learnedSkills + 2);
 	renderStatsLearnedSkills("Pawn 2", 0x7F0 + 0x1660 + 0x1660, learnedSkills + 3);
 	ImGui::PopID();
+}
+
 }
 
 void Hooks::PlayerStats()

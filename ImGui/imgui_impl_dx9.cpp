@@ -24,7 +24,7 @@ struct CUSTOMVERTEX
 };
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1)
 
-void ImGui_ImplDX9_RenderDrawLists(ImDrawData* draw_data)
+static void ImGui_ImplDX9_RenderDrawLists(ImDrawData* draw_data)
 {
 	// Create and grow buffers if needed
 	if (!g_pVB || g_VertexBufferSize < draw_data->TotalVtxCount)
@@ -214,7 +214,7 @@ bool ImGui_ImplDX9_Init(IDirect3DDevice9* device)
 	return true;
 }
 
-bool ImGui_ImplDX9_CreateFontsTexture()
+static bool ImGui_ImplDX9_CreateFontsTexture()
 {
 	// Build texture atlas
 	ImGuiIO& io = ImGui::GetIO();

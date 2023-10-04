@@ -6,6 +6,9 @@
 #include "WeaponSets.h"
 #include "Hotkeys.h"
 
+namespace
+{
+
 bool clockEnabled;
 ImFont *clockFont;
 ImVec2 clockPosition;
@@ -103,6 +106,8 @@ void renderClockUI()
 				config.setInts("inGameUI", "clockPosition", { (int)window->Pos.x, (int)window->Pos.y });
 		}
 	}
+}
+
 }
 
 void Hooks::InGameClock()

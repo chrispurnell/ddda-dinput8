@@ -7,6 +7,9 @@
 #include "InGameUI.h"
 #include "Lists.h"
 
+namespace
+{
+
 bool thirdSkillLevels[0x200][4] = {};
 void thirdSkillLevelsInit(int partyId, std::vector<int> list)
 {
@@ -544,7 +547,7 @@ void renderCheatsUI()
 		if (ImGui::ComboEnum<int>("Outside run type", &runType, runTypeMapEV))
 		{
 			config.setInt("cheats", "runType", runType);
-			if (prevState != runType >= 0)
+			if (prevState != (runType >= 0))
 				Hooks::SwitchHook("Cheat (runType)", pRunType, runType >= 0);
 		}
 
@@ -552,7 +555,7 @@ void renderCheatsUI()
 		if (ImGui::InputFloatEx("Weight multiplicator", &mWeight, 0.01f, -1.0f, 1.0f))
 		{
 			config.setFloat("cheats", "weightMultiplicator", mWeight);
-			if (prevState != mWeight >= 0)
+			if (prevState != (mWeight >= 0))
 				Hooks::SwitchHook("Cheat (weight)", pWeight, mWeight >= 0);
 		}
 
@@ -561,7 +564,7 @@ void renderCheatsUI()
 		{
 			config.setFloat("cheats", "timeInterval", mTimeInterval);
 			fTimeInterval = mTimeInterval < 0.005f ? 1.0f / 30.0f : mTimeInterval;
-			if (prevState != mTimeInterval >= 0)
+			if (prevState != (mTimeInterval >= 0))
 				Hooks::SwitchHook("Cheat (timeInterval)", pTimeInterval, mTimeInterval >= 0);
 		}
 
@@ -619,6 +622,8 @@ void renderCheatsUI()
 			ImGui::TreePop();
 		}
 	}
+}
+
 }
 
 void Hooks::Cheats()
