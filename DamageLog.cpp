@@ -8,64 +8,45 @@
 namespace
 {
 
-struct damageLogInfo
-{
-	LPVOID targetBase;
-	BYTE targetId;
-	float damage;
-	damageLogInfo(LPVOID base, BYTE id, float dmg) : targetBase(base), targetId(id), damage(dmg) {}
-};
-
 CRITICAL_SECTION damageLogSync;
-std::vector<damageLogInfo> damageLogBuffer;
-void __stdcall HDamageLogStore(BYTE *targetBase, float damage)
+std::vector<UINT32> damageLogBuffer;
+void __stdcall HDamageLogStore(UINT32 id)
 {
 	EnterCriticalSection(&damageLogSync);
-	damageLogBuffer.emplace_back(targetBase, targetBase[0x2D], damage);
+	damageLogBuffer.push_back(id);
 	LeaveCriticalSection(&damageLogSync);
 }
 
-LPBYTE pDamageLog1, oDamageLog1;
-void __declspec(naked) HDamageLog1()
+LPBYTE pDamageLog, oDamageLog;
+void __declspec(naked) HDamageLog()
 {
-	asm("mov	(%esp),%eax");
 	asm("pusha");
-	asm("push	%eax");
-	asm("push	%ebx");
+	asm("push	%edx");
 	asm("call	%0" : : "m"(HDamageLogStore));
 	asm("popa");
-	asm("jmp	*%0" : : "m"(oDamageLog1));
-}
-
-LPBYTE pDamageLog2, oDamageLog2;
-void __declspec(naked) HDamageLog2()
-{
-	asm("mov	(%esp),%eax");
-	asm("pusha");
-	asm("push	%eax");
-	asm("push	%esi");
-	asm("call	%0" : : "m"(HDamageLogStore));
-	asm("popa");
-	asm("jmp	*%0" : : "m"(oDamageLog2));
-}
-
-LPBYTE pDamageLog3, oDamageLog3;
-void __declspec(naked) HDamageLog3()
-{
-	asm("mov	(%esp),%eax");
-	asm("pusha");
-	asm("push	%eax");
-	asm("push	%esi");
-	asm("call	%0" : : "m"(HDamageLogStore));
-	asm("popa");
-	asm("jmp	*%0" : : "m"(oDamageLog3));
+	asm("jmp	*%0" : : "m"(oDamageLog));
 }
 
 bool damageLog = false;
-UINT32 damageLogTargetType;
 ImVec2 damageLogPosition, damageLogSize;
 ImVec4 damageLogForeground, damageLogBackground;
 ImGuiWindowFlags damageLogFlags = ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar;
+
+int unique[113] = {
+ 4175, 4176, 4177, 4178, 4179, 4180, 4181, 4182, 4183, 4207,
+ 4208, 4209, 4210, 4211, 4212, 4239, 4240, 4276, 4277, 4279,
+ 4280, 4308, 4309, 4310, 4311, 4340, 4341, 4342, 4343, 4344,
+ 4367, 4368, 4453, 4454, 4455, 4456, 4457, 4421, 4422, 4423,
+ 4424, 4490, 4491, 4492, 4522, 4523, 4524, 4525, 4526, 4554,
+ 4555, 4556, 4557, 4586, 4587, 4588, 4589, 4590, 4591, 4592,
+ 4593, 4594, 4618, 4619, 4620, 4621, 4623, 4682, 4683, 4714,
+ 4715, 4716, 4717, 4718, 4719, 4720, 4721, 4842, 4843, 4223,
+ 4884, 4885, 4886, 4887, 4901, 4902, 4903, 4943, 4944, 4946,
+ 4945, 4947, 4970, 4971, 4972, 4463, 4634, 4635, 4636, 4637,
+ 4638, 4639, 4694, 4695, 4696, 4756, 4757, 4758, 4759, 4997,
+ 4998, 4999, 5000
+};
+
 void renderDamageLog(bool getsInput)
 {
 	if (!damageLog)
@@ -80,22 +61,12 @@ void renderDamageLog(bool getsInput)
 		ImGui::PushStyleColor(ImGuiCol_Text, damageLogForeground);
 		ImGuiListClipper clipper(damageLogBuffer.size(), ImGui::GetTextLineHeightWithSpacing());
 
-		LPVOID lastId = nullptr;
 		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
 		{
-			if (lastId != damageLogBuffer[i].targetBase)
-			{
-				if (lastId)
-					ImGui::Separator();
-				lastId = damageLogBuffer[i].targetBase;
-			}
-
-			if (damageLogTargetType == 2)
-				ImGui::Text("%08X -> %.2f", (UINT32)damageLogBuffer[i].targetBase, damageLogBuffer[i].damage);
-			else if (damageLogTargetType == 1)
-				ImGui::Text("%02X -> %.2f", damageLogBuffer[i].targetId, damageLogBuffer[i].damage);
-			else
-				ImGui::Text("%.2f", damageLogBuffer[i].damage);
+			UINT32 n = damageLogBuffer[i];
+			INT32 id = -1;
+			if (n < 113) id = unique[n];
+			ImGui::Text("%u: %d", n, id);
 		}
 
 		clipper.End();
@@ -110,9 +81,7 @@ void renderDamageLog(bool getsInput)
 void DamageLogSwitch()
 {
 	config.setBool("inGameUI", "damageLog", damageLog = !damageLog);
-	Hooks::SwitchHook("DamageLog", pDamageLog1, damageLog);
-	Hooks::SwitchHook("DamageLog", pDamageLog2, damageLog);
-	Hooks::SwitchHook("DamageLog", pDamageLog3, damageLog);
+	Hooks::SwitchHook("DamageLog", pDamageLog, damageLog);
 }
 
 void renderDamageLogUI()
@@ -122,14 +91,8 @@ void renderDamageLogUI()
 		if (ImGui::Checkbox("Enabled", &damageLog))
 		{
 			config.setBool("inGameUI", "damageLog", damageLog);
-			Hooks::SwitchHook("DamageLog", pDamageLog1, damageLog);
-			Hooks::SwitchHook("DamageLog", pDamageLog2, damageLog);
-			Hooks::SwitchHook("DamageLog", pDamageLog3, damageLog);
+			Hooks::SwitchHook("DamageLog", pDamageLog, damageLog);
 		}
-
-		std::pair<UINT32, const char*> targetType[]{ { 0, "Dmg only" },{ 1, "Group id" },{ 2, "Unique id" } };
-		if (ImGui::RadioButtons<UINT32>(&damageLogTargetType, targetType))
-			config.setUInt("inGameUI", "damageLogTargetType", damageLogTargetType);
 
 		if (ImGui::ColorEdit4("Foreground", (float*)&damageLogForeground))
 			config.setUInt("inGameUI", "damageLogForeground", ImGui::ColorConvertFloat4ToU32(damageLogForeground), true);
@@ -168,7 +131,6 @@ void Hooks::DamageLog()
 	HotkeysAdd("keyDamageLog", 'P', DamageLogSwitch);
 
 	damageLog = config.getBool("inGameUI", "damageLog", false);
-	damageLogTargetType = std::min(config.getUInt("inGameUI", "damageLogTargetType", 2), 2U);
 	ImU32 foreground = config.getUInt("inGameUI", "damageLogForeground", ImGui::ColorConvertFloat4ToU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)));
 	ImU32 background = config.getUInt("inGameUI", "damageLogBackground", ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 0.1f)));
 	auto position = config.getInts("inGameUI", "damageLogPosition");
@@ -178,16 +140,10 @@ void Hooks::DamageLog()
 	damageLogPosition = position.size() == 2 ? ImVec2((float)position[0], (float)position[1]) : ImVec2(500, 0);
 	damageLogSize = size.size() == 2 ? ImVec2((float)size[0], (float)size[1]) : ImVec2(200, 400);
 
-	BYTE sig1[] = { 0x51, 0xF3, 0x0F, 0x11, 0x0C, 0x24, 0xE8, 0xCC, 0xCC, 0xCC, 0xCC, 0x8B, 0x13, 0x8B, 0x82, 0xD4, 0x01, 0x00, 0x00 };
-	BYTE sig2[] = { 0x51, 0xF3, 0x0F, 0x11, 0x0C, 0x24, 0xE8, 0xCC, 0xCC, 0xCC, 0xCC, 0x8B, 0x16, 0x8B, 0x82, 0xD4, 0x01, 0x00, 0x00 };
-	BYTE sig3[] = { 0x51, 0xF3, 0x0F, 0x11, 0x0C, 0x24, 0xE8, 0xCC, 0xCC, 0xCC, 0xCC, 0x8B, 0x06, 0x8B, 0x90, 0xD4, 0x01, 0x00, 0x00 };
-	if (FindSignature("DamageLog", sig1, &pDamageLog1) &&
-		FindSignature("DamageLog", sig2, &pDamageLog2) &&
-		FindSignature("DamageLog", sig3, &pDamageLog3))
+	BYTE sig[] = { 0x80, 0x7f, 0x2c, 0x00, 0x0f, 0x85, 0x16, 0x01, 0x00, 0x00, 0x83, 0xfa, 0x74 };
+	if (FindSignature("DamageLog", sig, &pDamageLog))
 	{
-		CreateHook("DamageLog", pDamageLog1 += 6, (LPVOID)HDamageLog1, &oDamageLog1, damageLog);
-		CreateHook("DamageLog", pDamageLog2 += 6, (LPVOID)HDamageLog2, &oDamageLog2, damageLog);
-		CreateHook("DamageLog", pDamageLog3 += 6, (LPVOID)HDamageLog3, &oDamageLog3, damageLog);
+		CreateHook("DamageLog", pDamageLog, (LPVOID)HDamageLog, &oDamageLog, damageLog);
 	}
 
 	InGameUIAdd(renderDamageLogUI);
