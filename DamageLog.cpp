@@ -150,6 +150,13 @@ void renderDamageLogUI()
 				config.setInts("inGameUI", "damageLogSize", { (int)window->Size.x, (int)window->Size.y });
 			}
 		}
+
+		if (ImGui::Button("Clear"))
+		{
+			EnterCriticalSection(&damageLogSync);
+			damageLogBuffer.clear();
+			LeaveCriticalSection(&damageLogSync);
+		}
 	}
 }
 
