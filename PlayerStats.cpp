@@ -84,7 +84,9 @@ void renderStatsRespec(const char *label, int offset, bool *respecShow)
 
 	int baseOffset = 0xA7000 + offset;
 	int statsOffset = baseOffset + 0x96C;
-	if (ImGui::Begin(string("Respec - ").append(label).c_str(), respecShow, ImVec2(400, 625)))
+	char str[32];
+	snprintf(str, sizeof str, "Respec - %s", label);
+	if (ImGui::Begin(str, respecShow, ImVec2(400, 625)))
 	{
 		ImGui::Columns(3);
 		ImGui::PushItemWidth(50.0f);
@@ -100,8 +102,8 @@ void renderStatsRespec(const char *label, int offset, bool *respecShow)
 		{
 			changed = true;
 			respecStart = 1;
-			std::fill_n(respecAbove10, 9, 0);
-			std::fill_n(respecAbove100, 9, 0);
+			fill_n(respecAbove10, 9, 0);
+			fill_n(respecAbove100, 9, 0);
 		}
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -142,7 +144,7 @@ void renderStatsRespec(const char *label, int offset, bool *respecShow)
 
 		ImGui::TextUnformatted("Levels 11 - 100:");
 		ImGui::PushID("Levels11-100");
-		int respecAbove10Sum = std::accumulate(respecAbove10, respecAbove10 + 9, 0);
+		int respecAbove10Sum = accumulate(respecAbove10, respecAbove10 + 9, 0);
 		for (auto &vocation : Hooks::ListVocations)
 		{
 			if (offset && (vocation.first == 4 || vocation.first == 5 || vocation.first == 6))
@@ -155,7 +157,7 @@ void renderStatsRespec(const char *label, int offset, bool *respecShow)
 		ImGui::Separator();
 		ImGui::TextUnformatted("Levels 101 - 200:");
 		ImGui::PushID("Levels101-200");
-		int respecAbove100Sum = std::accumulate(respecAbove100, respecAbove100 + 9, 0);
+		int respecAbove100Sum = accumulate(respecAbove100, respecAbove100 + 9, 0);
 		for (auto &vocation : Hooks::ListVocations)
 		{
 			if (offset && (vocation.first == 4 || vocation.first == 5 || vocation.first == 6))
@@ -258,24 +260,30 @@ void renderStatsParty(const char *label, int offset, bool *respecShow)
 	ImGui::PopID();
 }
 
-bool renderStatsSkill(int offset, int skillCount, const char *label, const std::vector<std::pair<int, LPCSTR>> &items)
+bool renderStatsSkill(int offset, int skillCount, const char *label, const vector<pair<int, LPCSTR>> &items)
 {
 	bool changed = false;
 	if (ImGui::TreeNode(label))
 	{
 		for (int i = 0; i < skillCount; i++)
-			changed |= ImGui::ComboEnum<UINT32>(("##" + std::to_string(i)).c_str(), GetBasePtr(offset + 4 * i), items);
+		{
+			char str[16];
+			snprintf(str, sizeof str, "##%d", i);
+			changed |= ImGui::ComboEnum<UINT32>(str, GetBasePtr(offset + 4 * i), items);
+		}
 		ImGui::TreePop();
 	}
 	return changed;
 }
 
-bool renderStatsSkills(const char *label, int offset, std::pair<bool, int> *state)
+bool renderStatsSkills(const char *label, int offset, pair<bool, int> *state)
 {
 	bool changed = false;
 	bool treeOpened = ImGui::TreeNode(label);
 	ImGui::SameLine(150.0f);
-	if (ImGui::SmallButton(string("Learned Skills##").append(label).c_str()))
+	char str[32];
+	snprintf(str, sizeof str, "Learned Skills##%s", label);
+	if (ImGui::SmallButton(str))
 		state->first = true;
 	if (treeOpened)
 	{
@@ -298,7 +306,7 @@ bool renderStatsSkills(const char *label, int offset, std::pair<bool, int> *stat
 	return changed;
 }
 
-std::vector<std::pair<LPCSTR, const std::vector<std::pair<int, LPCSTR>>*>> SkillTypeList =
+vector<pair<LPCSTR, const vector<pair<int, LPCSTR>>*>> SkillTypeList =
 {
 	{ "Sword", &Hooks::ListSkillsSword },
 	{ "Longsword", &Hooks::ListSkillsLongsword },
@@ -312,11 +320,13 @@ std::vector<std::pair<LPCSTR, const std::vector<std::pair<int, LPCSTR>>*>> Skill
 	{ "Core", &Hooks::ListSkillsCore },
 	{ "Augments", &Hooks::ListSkillsAugments }
 };
-void renderStatsLearnedSkills(const char *label, int offset, std::pair<bool, int> *state)
+void renderStatsLearnedSkills(const char *label, int offset, pair<bool, int> *state)
 {
 	if (state->first)
 	{
-		ImGui::Begin(string("Learned skills - ").append(label).c_str(), &(state->first), ImVec2(500, 400));
+		char str[32];
+		snprintf(str, sizeof str, "Learned skills - %s", label);
+		ImGui::Begin(str, &(state->first), ImVec2(500, 400));
 		ImGui::Columns(5, nullptr, false);
 		for (size_t i = 0; i < SkillTypeList.size(); i++)
 		{
@@ -384,7 +394,7 @@ void renderStatsUI()
 		ImGui::PopID();
 	}
 
-	static std::pair<bool, int> learnedSkills[4] = {};
+	static pair<bool, int> learnedSkills[4] = {};
 	if (ImGui::CollapsingHeader("Skills"))
 	{
 		ImGui::PushID("Skills");

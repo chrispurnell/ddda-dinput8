@@ -72,10 +72,10 @@ void Initialize()
 	LOG("MH_Initialize: %s\n", MH_StatusToString(status));
 	InitHooks();
 
-	string loadLibrary = config.getStr("main", "loadLibrary");
-	if (!loadLibrary.empty())
+	LPCSTR loadLibrary = config.getStr("main", "loadLibrary");
+	if (*loadLibrary)
 	{
-		HMODULE hMod = LoadLibrary(loadLibrary.c_str());
+		HMODULE hMod = LoadLibrary(loadLibrary);
 		oDirectInput8Create = (tDirectInput8Create)GetProcAddress(hMod, "DirectInput8Create");
 	}
 

@@ -6,7 +6,16 @@
 namespace
 {
 
-string saveDir, savePath;
+struct fileInfo
+{
+	UINT64 time;
+	string name;
+	fileInfo(UINT64 t, const char *n) : time(t), name(n) { }
+};
+inline bool operator<(const fileInfo &a, const fileInfo &b) { return a.time < b.time; }
+
+CHAR saveDir[PATH_MAX];
+CHAR savePath[PATH_MAX];
 int saveLimit;
 void printError(LPCSTR msg, DWORD error)
 {
@@ -23,15 +32,17 @@ void printError(LPCSTR msg, DWORD error)
 void clearBackups()
 {
 	WIN32_FIND_DATA ffd;
-	HANDLE hFind = FindFirstFile((saveDir + "ddda_*.sav").c_str(), &ffd);
+	CHAR path[PATH_MAX];
+	sprintf_s(path, PATH_MAX, "%s\\ddda_*.sav", saveDir);
+	HANDLE hFind = FindFirstFile(path, &ffd);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return;
 
-	std::vector<std::pair<UINT64, string>> files;
+	vector<fileInfo> files;
 	do
 	{
 		SYSTEMTIME t;
-		if (sscanf_s(ffd.cFileName, "ddda_%04hd-%02hd-%02hd_%02hd-%02hd-%02hd.sav",
+		if (sscanf_s(ffd.cFileName, "ddda_%04hu-%02hu-%02hu_%02hu-%02hu-%02hu.sav",
 			&t.wYear, &t.wMonth, &t.wDay, &t.wHour, &t.wMinute, &t.wSecond) == 6)
 		{
 			UINT64 time;
@@ -44,28 +55,30 @@ void clearBackups()
 	sort(files.begin(), files.end());
 	for (int i = 0; i < (int)files.size() - saveLimit; i++)
 	{
-		string file = saveDir + files[i].second;
-		DeleteFile(file.c_str());
-		LOG("Backup deleted: %s\n", file.c_str());
+		CHAR file[PATH_MAX];
+		if (sprintf_s(file, "%s\\%s", saveDir, files[i].name.c_str()) > 0)
+		{
+			DeleteFile(file);
+			LOG("Backup deleted: %s\n", file);
+		}
 	}
 }
 
 void __stdcall handleSave()
 {
 	WIN32_FILE_ATTRIBUTE_DATA fileData;
-	if (GetFileAttributesEx(savePath.c_str(), GetFileExInfoStandard, &fileData))
+	if (GetFileAttributesEx(savePath, GetFileExInfoStandard, &fileData))
 	{
 		SYSTEMTIME systemTime, t;
 		FileTimeToSystemTime(&fileData.ftLastWriteTime, &systemTime);
 		SystemTimeToTzSpecificLocalTime(nullptr, &systemTime, &t);
 
-		CHAR str[64];
-		sprintf_s(str, "ddda_%04hd-%02hd-%02hd_%02hd-%02hd-%02hd.sav", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
-		string backupPath = saveDir + str;
+		CHAR backupPath[PATH_MAX];
+		sprintf_s(backupPath, "%s\\ddda_%04hu-%02hu-%02hu_%02hu-%02hu-%02hu.sav", saveDir, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
-		if (CopyFile(savePath.c_str(), backupPath.c_str(), FALSE))
+		if (CopyFile(savePath, backupPath, FALSE))
 		{
-			LOG("Backup created: %s\n", backupPath.c_str());
+			LOG("Backup created: %s\n", backupPath);
 			if (saveLimit > 0)
 				clearBackups();
 		}
@@ -85,45 +98,74 @@ void __declspec(naked) HSaveGame()
 	asm("jmp	*%0" : : "m"(oSaveGame));
 }
 
+char *strrstr(char *x, const char *y)
+{
+	char *p = nullptr;
+	char *n;
+	if (*y == 0)
+		return x + strlen(x);
+	while ((n = strstr(x, y)) != nullptr)
+	{
+		p = n;
+		x = n + 1;
+	}
+	return p;
+}
+
 bool findSavePath()
 {
-	string configDir = config.getStr("main", "savePath");
-	if (configDir.empty())
+	LPCSTR configDir = config.getStr("main", "savePath");
+	if (!*configDir)
 	{
 		HMODULE hModule = GetModuleHandle("steam_api.dll");
 		if (hModule)
 		{
-			char buf[1024];
 			tSteamUser pSteamUser = (tSteamUser)GetProcAddress(hModule, "SteamUser");
-			if (pSteamUser && pSteamUser() && pSteamUser()->GetUserDataFolder(buf, 1024))
+			if (pSteamUser)
 			{
-				saveDir = string(buf);
-				size_t index = saveDir.rfind("local");
-				if (index != string::npos)
+				char buf[1024];
+				ISteamUser *steamUser = pSteamUser();
+				if (steamUser && steamUser->GetUserDataFolder(buf, 1024))
 				{
-					saveDir.erase(index);
-					saveDir += "remote";
+					char *s = strrstr(buf, "local");
+					if (s)
+					{
+						*s = 0;
+						sprintf_s(saveDir, "%sremote", buf);
+					}
+					else
+						strcpy_s(saveDir, buf);
 				}
 			}
 		}
 	}
 	else
-		saveDir = configDir;
-	saveDir.erase(saveDir.find_last_not_of('\\') + 1);
+		strcpy_s(saveDir, configDir);
 
-	DWORD attributes = GetFileAttributes(saveDir.c_str());
-	if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+	char *p = saveDir;
+	for (int i = 0; i < PATH_MAX; i++)
 	{
-		if (configDir.empty())
-			LOG("SaveBackup path: NOT FOUND, SET MANUALLY IN DINPUT8.INI\n");
-		else
-			LOG("SaveBackup path: INVALID PATH - %s\n", saveDir.c_str());
+		char c = saveDir[i];
+		if (!c) break;
+		if (c != '\\') p = saveDir + 1 + i;
+	}
+	*p = 0;
+
+	if (!saveDir[0])
+	{
+		LOG("SaveBackup path: NOT FOUND, SET MANUALLY IN DINPUT8.INI\n");
 		return false;
 	}
 
-	saveDir.push_back('\\');
-	savePath = saveDir + "ddda.sav";
-	LOG("SaveBackup path: %s\n", savePath.c_str());
+	DWORD attributes = GetFileAttributes(saveDir);
+	if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+	{
+		LOG("SaveBackup path: INVALID PATH - %s\n", saveDir);
+		return false;
+	}
+
+	sprintf_s(savePath, PATH_MAX, "%s\\ddda.sav", saveDir);
+	LOG("SaveBackup path: %s\n", savePath);
 	return true;
 }
 

@@ -17,7 +17,7 @@ struct damageLogInfo
 };
 
 CRITICAL_SECTION damageLogSync;
-std::vector<damageLogInfo> damageLogBuffer;
+vector<damageLogInfo> damageLogBuffer;
 void __stdcall HDamageLogStore(BYTE *targetBase, float damage)
 {
 	EnterCriticalSection(&damageLogSync);
@@ -91,7 +91,7 @@ void renderDamageLog(bool getsInput)
 			}
 
 			if (damageLogTargetType == 2)
-				ImGui::Text("%08X -> %.2f", (UINT32)damageLogBuffer[i].targetBase, damageLogBuffer[i].damage);
+				ImGui::Text("%08X -> %.2f", (UINT)damageLogBuffer[i].targetBase, damageLogBuffer[i].damage);
 			else if (damageLogTargetType == 1)
 				ImGui::Text("%02X -> %.2f", damageLogBuffer[i].targetId, damageLogBuffer[i].damage);
 			else
@@ -127,7 +127,7 @@ void renderDamageLogUI()
 			Hooks::SwitchHook("DamageLog", pDamageLog3, damageLog);
 		}
 
-		std::pair<UINT32, const char*> targetType[]{ { 0, "Dmg only" },{ 1, "Group id" },{ 2, "Unique id" } };
+		pair<UINT32, const char*> targetType[]{ { 0, "Dmg only" },{ 1, "Group id" },{ 2, "Unique id" } };
 		if (ImGui::RadioButtons<UINT32>(&damageLogTargetType, targetType))
 			config.setUInt("inGameUI", "damageLogTargetType", damageLogTargetType);
 
@@ -168,7 +168,7 @@ void Hooks::DamageLog()
 	HotkeysAdd("keyDamageLog", 'P', DamageLogSwitch);
 
 	damageLog = config.getBool("inGameUI", "damageLog", false);
-	damageLogTargetType = std::min(config.getUInt("inGameUI", "damageLogTargetType", 2), 2U);
+	damageLogTargetType = min(config.getUInt("inGameUI", "damageLogTargetType", 2), 2U);
 	ImU32 foreground = config.getUInt("inGameUI", "damageLogForeground", ImGui::ColorConvertFloat4ToU32(ImVec4(0.0f, 0.0f, 0.0f, 1.0f)));
 	ImU32 background = config.getUInt("inGameUI", "damageLogBackground", ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, 0.1f)));
 	auto position = config.getInts("inGameUI", "damageLogPosition");

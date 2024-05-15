@@ -11,25 +11,23 @@ public:
 	void init();
 
 	void removeKey(LPCSTR section, LPCSTR key) const;
-	std::vector<int> getSectionInts(LPCSTR section);
+	vector<int> getSectionInts(LPCSTR section);
 
-	string getStr(LPCSTR section, LPCSTR key, string defValue = string());
+	LPCSTR getStr(LPCSTR section, LPCSTR key, LPCSTR defValue = "");
 	int getInt(LPCSTR section, LPCSTR key, int defValue);
 	unsigned int getUInt(LPCSTR section, LPCSTR key, unsigned int defValue);
 	float getFloat(LPCSTR section, LPCSTR key, float defValue);
-	double getDouble(LPCSTR section, LPCSTR key, double defValue);
 	bool getBool(LPCSTR section, LPCSTR key, bool defValue);
-	int getEnum(LPCSTR section, LPCSTR key, int defValue, std::pair<int, LPCSTR> map[], int size);
-	std::vector<int> getInts(LPCSTR section, LPCSTR key);
-	std::vector<float> getFloats(LPCSTR section, LPCSTR key);
+	int getEnum(LPCSTR section, LPCSTR key, int defValue, pair<int, LPCSTR> map[], int size);
+	vector<int> getInts(LPCSTR section, LPCSTR key);
+	vector<float> getFloats(LPCSTR section, LPCSTR key);
 
-	void setStr(LPCSTR section, LPCSTR key, string value) const;
-	void setInt(LPCSTR section, LPCSTR key, int value) const;
-	void setUInt(LPCSTR section, LPCSTR key, unsigned int value, bool hex = false) const;
-	void setFloat(LPCSTR section, LPCSTR key, float value) const;
-	void setDouble(LPCSTR section, LPCSTR key, double value) const;
-	void setBool(LPCSTR section, LPCSTR key, bool value) const;
-	void setEnum(LPCSTR section, LPCSTR key, int value, std::pair<int, LPCSTR> map[], int size) const;
-	void setInts(LPCSTR section, LPCSTR key, std::vector<int> list) const;
-	void setFloats(LPCSTR section, LPCSTR key, std::vector<float> list) const;
+	void setStr(LPCSTR section, LPCSTR key, LPCSTR value);
+	void setInt(LPCSTR section, LPCSTR key, int value);
+	void setUInt(LPCSTR section, LPCSTR key, unsigned int value, bool hex = false);
+	void setFloat(LPCSTR section, LPCSTR key, float value);
+	void setBool(LPCSTR section, LPCSTR key, bool value);
+	void setEnum(LPCSTR section, LPCSTR key, int value, pair<int, LPCSTR> map[], int size);
+	void setInts(LPCSTR section, LPCSTR key, vector<int> list);
+	void setFloats(LPCSTR section, LPCSTR key, vector<float> list);
 };

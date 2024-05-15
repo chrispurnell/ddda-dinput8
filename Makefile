@@ -1,12 +1,16 @@
+MAKEFLAGS += -rR
+
 CC=i686-w64-mingw32-gcc
-CXX=i686-w64-mingw32-g++
+CXX=i686-w64-mingw32-gcc
 AR=i686-w64-mingw32-ar
 OPT=-O2 -fno-math-errno -ffunction-sections
+OPTXX=$(OPT) -fno-exceptions -fno-rtti -fno-threadsafe-statics
 WARN=-Wall
 WARNXX=$(WARN) -Wno-class-memaccess
-CFLAGS=-std=c11 $(OPT) $(WARN)
-CXXFLAGS=-std=c++11 $(OPT) $(WARNXX)
-LDFLAGS=-s $(OPT) -Wl,--gc-sections,--kill-at
+DEFS=-D__USE_MINGW_ANSI_STDIO=0
+CFLAGS=-std=c11 $(OPT) $(WARN) $(DEFS)
+CXXFLAGS=-std=c++11 -nostdinc++ $(OPTXX) $(WARNXX) $(DEFS)
+LDFLAGS=-s -Wl,--gc-sections,--kill-at
 LIBS=$(IG_LIB) $(MH_LIB) -ld3dx9_43
 
 LIB=dinput8.dll

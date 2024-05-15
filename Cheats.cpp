@@ -11,7 +11,7 @@ namespace
 {
 
 bool thirdSkillLevels[0x200][4] = {};
-void thirdSkillLevelsInit(int partyId, std::vector<int> list)
+void thirdSkillLevelsInit(int partyId, vector<int> list)
 {
 	if (list.empty())
 		return;
@@ -176,7 +176,7 @@ struct augmentInfo
 	UINT32 Unknown1;
 	UINT32 Unknown2;
 
-	std::vector<float> getList() const { return{ Activated, Deactivated, static_cast<float>(Unknown1), static_cast<float>(Unknown2) }; }
+	vector<float> getList() const { return{ Activated, Deactivated, static_cast<float>(Unknown1), static_cast<float>(Unknown2) }; }
 };
 
 bool augmentMods;
@@ -251,7 +251,7 @@ struct buffInfo
 	float Param0;
 	float Param1;
 
-	std::vector<float> getList() const { return{ Timer, Param0, Param1 }; }
+	vector<float> getList() const { return{ Timer, Param0, Param1 }; }
 };
 
 bool buffModsLog = false;
@@ -322,9 +322,11 @@ void renderCheatsSkillLevel(const char *label, float position, bool *check, int 
 	if (isHeader)
 		ImGui::Text(label);
 	ImGui::SameLine(position + 50.0f);
-	if (ImGui::Checkbox((string("##") + label).c_str(), check))
+	char str[32];
+	snprintf(str, sizeof str, "##%s", label);
+	if (ImGui::Checkbox(str, check))
 	{
-		std::vector<int> list;
+		vector<int> list;
 		for (size_t i = 0; i < Hooks::ListItemEnchant.size() - 1; i++)
 		{
 			int skillId = Hooks::ListItemEnchant[i].first;
@@ -333,28 +335,34 @@ void renderCheatsSkillLevel(const char *label, float position, bool *check, int 
 			if (thirdSkillLevels[skillId][partyId])
 				list.push_back(skillId);
 		}
-		config.setInts("cheats", (string("thirdSkillLevel") + label).c_str(), list);
+		snprintf(str, sizeof str, "thirdSkillLevel%s", label);
+		config.setInts("cheats", str, list);
 	}
 }
 
 void renderCheatsAugment(const char *label, float position, int partyId, int skillId)
 {
 	ImGui::SameLine(position);
-	if (ImGui::Checkbox((string("##") + label).c_str(), augmentsActive[skillId] + partyId))
+	char str[32];
+	snprintf(str, sizeof str, "##%s", label);
+	if (ImGui::Checkbox(str, augmentsActive[skillId] + partyId))
 	{
-		std::vector<int> list;
+		vector<int> list;
 		for (size_t i = 1; i < Hooks::ListSkillsAugments.size(); i++)
 			if (augmentsActive[Hooks::ListSkillsAugments[i].first][partyId])
 				list.push_back(Hooks::ListSkillsAugments[i].first);
-		config.setInts("augments", (string("augments") + label).c_str(), list);
+		snprintf(str, sizeof str, "augments%s", label);
+		config.setInts("augments", str, list);
 	}
 }
 
 bool shareWeaponSkills, ignoreEquipVocation, ignoreSkillVocation;
-std::vector<std::pair<int, LPCSTR>> runTypeMapEV = { { -1, "Disabled" },{ 0, "Town Animation" },{ 1, "Town Animation + Stamina" },{ 2, "Stamina" } };
+vector<pair<int, LPCSTR>> runTypeMapEV = { { -1, "Disabled" },{ 0, "Town Animation" },{ 1, "Town Animation + Stamina" },{ 2, "Stamina" } };
 void renderCheatsUI()
 {
 	static bool setSkillsOpened = false, setAugmentsOpened = false, setAugmentModsOpened = false, setBuffModsOpened = false;
+	char str[16];
+
 	if (setSkillsOpened)
 	{
 		ImGui::PushID("Set 3rd level skills");
@@ -421,7 +429,8 @@ void renderCheatsUI()
 			{
 				augmentModsEnabled[addMod] = true;
 				augmentModsValues[addMod] = *augmentOriginal;
-				config.setFloats("augments", std::to_string(addMod).c_str(), augmentModsValues[addMod].getList());
+				snprintf(str, sizeof str, "%d", addMod);
+				config.setFloats("augments", str, augmentModsValues[addMod].getList());
 			}
 		}
 
@@ -454,12 +463,16 @@ void renderCheatsUI()
 			ImGui::SameLine(150.0f + 105.0f * 4);
 			if (ImGui::Button("Remove"))
 			{
-				config.removeKey("augments", std::to_string(skillId).c_str());
+				snprintf(str, sizeof str, "%d", skillId);
+				config.removeKey("augments", str);
 				augmentModsEnabled[skillId] = false;
 			}
 
 			if (changed)
-				config.setFloats("augments", std::to_string(skillId).c_str(), augmentModsValues[skillId].getList());
+			{
+				snprintf(str, sizeof str, "%d", skillId);
+				config.setFloats("augments", str, augmentModsValues[skillId].getList());
+			}
 			ImGui::PopID();
 		}
 		ImGui::End();
@@ -483,7 +496,8 @@ void renderCheatsUI()
 				buffModsValues[addMod].Timer = buffOriginal->Timer;
 				buffModsValues[addMod].Param0 = buffOriginal->Param0;
 				buffModsValues[addMod].Param1 = buffOriginal->Param1;
-				config.setFloats("buffs", std::to_string(addMod).c_str(), buffModsValues[addMod].getList());
+				snprintf(str, sizeof str, "%d", addMod);
+				config.setFloats("buffs", str, buffModsValues[addMod].getList());
 			}
 		}
 
@@ -513,12 +527,16 @@ void renderCheatsUI()
 			ImGui::SameLine(150.0f + 105.0f * 3);
 			if (ImGui::Button("Remove"))
 			{
-				config.removeKey("buffs", std::to_string(buffId).c_str());
+				snprintf(str, sizeof str, "%d", buffId);
+				config.removeKey("buffs", str);
 				buffModsValues[buffId].Enabled = FALSE;
 			}
 
 			if (changed)
-				config.setFloats("buffs", std::to_string(buffId).c_str(), buffModsValues[buffId].getList());
+			{
+				snprintf(str, sizeof str, "%d", buffId);
+				config.setFloats("buffs", str, buffModsValues[buffId].getList());
+			}
 			ImGui::PopID();
 		}
 
@@ -605,7 +623,7 @@ void renderCheatsUI()
 		ImGui::Separator();
 		if (ImGui::TreeNode("Affinity mod"))
 		{
-			std::vector<std::pair<int, LPCSTR>> affinityModEV =
+			vector<pair<int, LPCSTR>> affinityModEV =
 			{
 				{ Disabled, "Disabled" },{ NoNegative, "No negative changes" },{ AllPositive, "All changes are positive" },
 				{ NoChange, "No changes at all" },{ InstantFriend, "Instant friend (850)" },{ InstantMax, "Instant max (900)" }
@@ -628,6 +646,8 @@ void renderCheatsUI()
 
 void Hooks::Cheats()
 {
+	char str[16];
+
 	BYTE sigRun[] = { 0x8B, 0x42, 0x40,			//mov	eax, [edx+40h]
 					0x53,						//push	ebx
 					0x8B, 0x5C, 0x24, 0x08 };	//mov	ebx, [esp+4+arg_0]
@@ -695,7 +715,8 @@ void Hooks::Cheats()
 			for (size_t i = 1; i < ListSkillsAugments.size(); i++)
 				if (ListSkillsAugments[i].first == augmentId)
 				{
-					auto values = config.getFloats("augments", std::to_string(augmentId).c_str());
+					snprintf(str, sizeof str, "%d", augmentId);
+					auto values = config.getFloats("augments", str);
 					if (values.size() == 4)
 					{
 						augmentModsValues[augmentId].Activated = values[0];
@@ -726,7 +747,8 @@ void Hooks::Cheats()
 			for (size_t i = 0; i < ListStatus.size(); i++)
 				if (ListStatus[i].first == buffId)
 				{
-					auto values = config.getFloats("buffs", std::to_string(buffId).c_str());
+					snprintf(str, sizeof str, "%d", buffId);
+					auto values = config.getFloats("buffs", str);
 					if (values.size() == 3)
 					{
 						buffModsValues[buffId].Enabled = TRUE;

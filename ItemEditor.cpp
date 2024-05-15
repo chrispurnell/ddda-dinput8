@@ -25,7 +25,7 @@ enum ItemStarType : UINT16
 	StarMask = Star1 | Star2 | Star3 | Star4 | Star5 | Star6
 };
 
-const std::vector<std::pair<int, LPCSTR>> ListItemStarType =
+const vector<pair<int, LPCSTR>> ListItemStarType =
 {
 	{ Star0, "0 stars" },{ Star1, "1 stars" },{ Star2, "2 stars" },{ Star3, "3 stars" },
 	{ Star4, "Dragon forged" },{ Star5, "Silver rarified" },{ Star6, "Gold rarified" }

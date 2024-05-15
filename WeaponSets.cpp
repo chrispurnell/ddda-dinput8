@@ -51,8 +51,8 @@ bool __declspec(naked) HRefreshSkillFileLinks()
 	asm("ret");
 }
 
-std::vector<std::array<int, 12 * 6>> weaponSetsSkills;
-std::vector<std::array<int, 2>> weaponSetsWeapons;
+vector<array<int, 12 * 6>> weaponSetsSkills;
+vector<array<int, 2>> weaponSetsWeapons;
 size_t weaponSetsSkillsC = 0, weaponSetsWeaponsC = 0, weaponSetsTimeout;
 CRITICAL_SECTION weaponSetsSync;
 LARGE_INTEGER timerFrequency, timerLast = {}, timerCurrent = {};
@@ -66,7 +66,7 @@ void WeaponSetsSkills()
 	if (++weaponSetsSkillsC >= weaponSetsSkills.size())
 		weaponSetsSkillsC = 0;
 	snprintf(Hooks::weaponSetsText, 16, "W%u | S%u", weaponSetsWeaponsC, weaponSetsSkillsC);
-	std::copy(weaponSetsSkills[weaponSetsSkillsC].begin(), weaponSetsSkills[weaponSetsSkillsC].end(), GetBasePtr<int>(0xA7808));
+	copy(weaponSetsSkills[weaponSetsSkillsC].begin(), weaponSetsSkills[weaponSetsSkillsC].end(), GetBasePtr<int>(0xA7808));
 	weaponSetsRefresh = true;
 	LeaveCriticalSection(&weaponSetsSync);
 }
@@ -80,7 +80,7 @@ void WeaponSetsWeapons()
 	if (++weaponSetsWeaponsC >= weaponSetsWeapons.size())
 		weaponSetsWeaponsC = 0;
 	snprintf(Hooks::weaponSetsText, 16, "W%u | S%u", weaponSetsWeaponsC, weaponSetsSkillsC);
-	std::copy(weaponSetsWeapons[weaponSetsWeaponsC].begin(), weaponSetsWeapons[weaponSetsWeaponsC].end(), GetBasePtr<int>(0xA76E4));
+	copy(weaponSetsWeapons[weaponSetsWeaponsC].begin(), weaponSetsWeapons[weaponSetsWeaponsC].end(), GetBasePtr<int>(0xA76E4));
 	weaponSetsRefresh = true;
 	LeaveCriticalSection(&weaponSetsSync);
 }
@@ -144,13 +144,17 @@ void __declspec(naked) HWeaponSetsS()
 	asm("jmp	*%0" : : "m"(oWeaponSetsS));
 }
 
-bool renderWeaponSkill(int index, int weaponId, int skillCount, const char *label, const std::vector<std::pair<int, LPCSTR>> &items)
+bool renderWeaponSkill(int index, int weaponId, int skillCount, const char *label, const vector<pair<int, LPCSTR>> &items)
 {
 	bool changed = false;
 	if (ImGui::TreeNode(label))
 	{
 		for (int i = 0; i < skillCount; i++)
-			changed |= ImGui::ComboEnum<UINT32>(("##" + std::to_string(i)).c_str(), &weaponSetsSkills[index][weaponId * 6 + i], items);
+		{
+			char str[16];
+			snprintf(str, sizeof str, "##%d", i);
+			changed |= ImGui::ComboEnum<UINT32>(str, &weaponSetsSkills[index][weaponId * 6 + i], items);
+		}
 		ImGui::TreePop();
 	}
 	return changed;
@@ -159,7 +163,9 @@ bool renderWeaponSkill(int index, int weaponId, int skillCount, const char *labe
 bool renderWeaponSet(int index)
 {
 	ImGui::PushID(index);
-	bool treeOpened = ImGui::TreeNode(string("Skills ").append(std::to_string(index)).c_str());
+	char str[24];
+	snprintf(str, sizeof str, "Skills %d", index);
+	bool treeOpened = ImGui::TreeNode(str);
 	ImGui::SameLine(100.0f);
 
 	bool changed = false;
@@ -206,7 +212,7 @@ void renderWeaponSetsUI()
 		if (ImGui::Button("Add skill set") && ((changed = true)))
 		{
 			weaponSetsSkills.emplace_back();
-			std::copy(GetBasePtr<int>(0xA7808), GetBasePtr<int>(0xA7808 + 12 * 6 * sizeof(int)), weaponSetsSkills.back().data());
+			copy(GetBasePtr<int>(0xA7808), GetBasePtr<int>(0xA7808 + 12 * 6 * sizeof(int)), weaponSetsSkills.back().data());
 		}
 
 		for (size_t i = 0; i < weaponSetsSkills.size(); i++)
@@ -250,14 +256,19 @@ void renderWeaponSetsUI()
 
 		if (changed)
 		{
+			char str[16];
+
 			if (weaponSetsSkills.size() == 0 && weaponSetsWeapons.size() == 0)
 				Hooks::weaponSetsText[0] = '\0';
 			for (auto setId : config.getSectionInts("weaponSets"))
-				config.removeKey("weaponSets", std::to_string(setId).c_str());
+			{
+				snprintf(str, sizeof str, "%d", setId);
+				config.removeKey("weaponSets", str);
+			}
 
 			for (size_t setId = 0; setId < weaponSetsSkills.size(); setId++)
 			{
-				std::vector<int> list;
+				vector<int> list;
 				for (size_t i = 0; i < weaponSetsSkills[setId].size(); i += 6)
 				{
 					list.push_back(weaponSetsSkills[setId][i + 0]);
@@ -270,10 +281,11 @@ void renderWeaponSetsUI()
 						list.push_back(weaponSetsSkills[setId][i + 5]);
 					}
 				}
-				config.setInts("weaponSets", std::to_string(setId).c_str(), list);
+				snprintf(str, sizeof str, "%d", setId);
+				config.setInts("weaponSets", str, list);
 			}
 
-			std::vector<int> list;
+			vector<int> list;
 			for (size_t i = 0; i < weaponSetsWeapons.size(); i++)
 			{
 				list.push_back(weaponSetsWeapons[i][0]);
@@ -298,7 +310,9 @@ void Hooks::WeaponSets()
 	weaponSetsTimeout = config.getUInt("weaponSets", "timeout", 500);
 	for (auto setId : config.getSectionInts("weaponSets"))
 	{
-		auto list = config.getInts("weaponSets", std::to_string(setId).c_str());
+		char str[16];
+		snprintf(str, sizeof str, "%d", setId);
+		auto list = config.getInts("weaponSets", str);
 		if (list.size() != 12 * 3 + 6)
 			continue;
 		weaponSetsSkills.emplace_back();

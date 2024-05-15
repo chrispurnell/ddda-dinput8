@@ -235,7 +235,7 @@ void renderMiscUI()
 			Hooks::SwitchHook("DisableAutoCamH", pAutoCamH, disableAutoCam);
 		}
 
-		std::pair<int, const char*> weather[]{ { 0, "Clear sky" }, { 1, "Cloudy" }, { 2, "Foggy" }, { 3, "Vulcanic" } };
+		pair<int, const char*> weather[]{ { 0, "Clear sky" }, { 1, "Cloudy" }, { 2, "Foggy" }, { 3, "Vulcanic" } };
 		ImGui::RadioButtons(GetBasePtr(0xB8780), weather);
 		ImGui::Checkbox("Weather - post game", GetBasePtr<bool>(0xB33A8));
 
@@ -274,15 +274,15 @@ void renderMiscUI()
 			ImGui::TextUnformatted("Walking Jump");
 			ImGui::TextUnformatted("Running Jump", 190.0f);
 			ImGui::PushItemWidth(150.0f);
-			int i = 1;
-			for (auto str : { "Height", "Length", "Gravity", "Damping", "MoveSpeed" })
+			static const char *labels1[5] = { "##Height", "##Length", "##Gravity", "##Damping", "##MoveSpeed" };
+			static const char *labels2[5] = { "Height", "Length", "Gravity", "Damping", "MoveSpeed" };
+			for (int i = 0; i < 5; i++)
 			{
-				if (ImGui::InputFloatEx(string("##1").append(str).c_str(), jumpMods + i, 0.1f))
-					config.setFloats("main", "jumpMods", std::vector<float>(jumpMods + 1, jumpMods + 6));
+				if (ImGui::InputFloatEx(labels1[i], jumpMods + 1 + i, 0.1f))
+					config.setFloats("main", "jumpMods", vector<float>(jumpMods + 1, jumpMods + 6));
 				ImGui::SameLine();
-				if (ImGui::InputFloatEx(str, jumpModsRun + i, 0.1f))
-					config.setFloats("main", "jumpModsRun", std::vector<float>(jumpModsRun + 1, jumpModsRun + 6));
-				i++;
+				if (ImGui::InputFloatEx(labels2[i], jumpModsRun + 1 + i, 0.1f))
+					config.setFloats("main", "jumpModsRun", vector<float>(jumpModsRun + 1, jumpModsRun + 6));
 			}
 			ImGui::PopItemWidth();
 			ImGui::TreePop();

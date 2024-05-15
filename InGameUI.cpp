@@ -9,9 +9,17 @@
 namespace
 {
 
-std::vector<void(*)()> content;
-std::vector<void(*)(bool)> windows;
-std::vector<std::tuple<LPCSTR, float, ImFont**>> fonts;
+struct fontInfo
+{
+	LPCSTR name;
+	float size;
+	ImFont **font;
+	fontInfo(LPCSTR n, float s, ImFont **f) : name(n), size(s), font(f) { }
+};
+
+vector<void(*)()> content;
+vector<void(*)(bool)> windows;
+vector<fontInfo> fonts;
 void onLostDevice() { ImGui_ImplDX9_InvalidateDeviceObjects(); }
 void onResetDevice() { ImGui_ImplDX9_CreateDeviceObjects(); }
 void onCreateDevice(LPDIRECT3DDEVICE9 pD3DDevice)
@@ -26,10 +34,10 @@ void onCreateDevice(LPDIRECT3DDEVICE9 pD3DDevice)
 		CHAR syspath[MAX_PATH];
 		GetWindowsDirectory(syspath, MAX_PATH);
 		strcat_s(syspath, "\\Fonts\\");
-		strcat_s(syspath, std::get<0>(fonts[i]));
+		strcat_s(syspath, fonts[i].name);
 
-		ImFont **font = std::get<2>(fonts[i]);
-		*font = ImGui::GetIO().Fonts->AddFontFromFileTTF(syspath, std::get<1>(fonts[i]));
+		ImFont **font = fonts[i].font;
+		*font = ImGui::GetIO().Fonts->AddFontFromFileTTF(syspath, fonts[i].size);
 		if (!*font)
 			LOG("InGameClock: failed to load font - %s\n", syspath);
 	}
