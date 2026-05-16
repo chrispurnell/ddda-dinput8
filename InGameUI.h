@@ -13,7 +13,7 @@ namespace Hooks
 
 namespace ImGui
 {
-	template <class T> bool ListBoxFilter(const char *label, void *v, const vector<pair<int, LPCSTR>> &items, ImGuiTextFilter &filter, bool scroll)
+	template <class T> bool ListBoxFilter(const char *label, void *v, const span<const pair<int, LPCSTR>> &items, ImGuiTextFilter &filter, bool scroll)
 	{
 		ListBoxHeader(label, items.size());
 		bool value_changed = false;
@@ -40,7 +40,7 @@ namespace ImGui
 		return value_changed;
 	}
 
-	template<class T> bool ComboEnum(const char *label, void *v, const vector<pair<int, LPCSTR>> &items)
+	template<class T> bool ComboEnum(const char *label, void *v, const span<const pair<int, LPCSTR>> &items)
 	{
 		auto items_getter = [](void* data, int idx, const char **text)
 		{

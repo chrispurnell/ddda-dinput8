@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Lists.h"
 
-const vector<pair<int, LPCSTR>> Hooks::ListStatus =
+static const pair<int, LPCSTR> ListStatusA[] =
 {
 	{ 0, "0: Poison" },
 	{ 1, "1: Torpor" },
@@ -44,8 +44,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListStatus =
 	{ 38, "38: Maximum Stamina Boosted" },
 	{ 39, "39: Disencumbered" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListStatus(ListStatusA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListVocations =
+static const pair<int, LPCSTR> ListVocationsA[] =
 {
 	{ 1, "Fighter" },
 	{ 2, "Strider" },
@@ -57,8 +58,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListVocations =
 	{ 8, "Ranger" },
 	{ 9, "Sorcerer" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListVocations(ListVocationsA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsCore =
+static const pair<int, LPCSTR> ListSkillsCoreA[] =
 {
 	{ -1, "Empty" },
 	{ 30, "30: Sword - Dire Onslaught" },
@@ -80,8 +82,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsCore =
 	{ 341, "341: MBow - True Seeker" },
 	{ 390, "390: Longbow - Quick Loose" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsCore(ListSkillsCoreA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsSword =
+static const pair<int, LPCSTR> ListSkillsSwordA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 40, "40: Blink Strike | Burst Strike" },
@@ -105,8 +108,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsSword =
 	{ 58, "58: Gouge | Dire Gouge" },
 	{ 59, "59: Clarity | Clairvoyance" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsSword(ListSkillsSwordA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsLongsword =
+static const pair<int, LPCSTR> ListSkillsLongswordA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 100, "100: Upward Strike | Whirlwind Slash" },
@@ -120,8 +124,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsLongsword =
 	{ 108, "108: Battle Cry | War Cry" },
 	{ 109, "109: Arc of Might | Arc of Deliverance" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsLongsword(ListSkillsLongswordA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsDagger =
+static const pair<int, LPCSTR> ListSkillsDaggerA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 150, "150: Biting Wind | Cutting Wind" },
@@ -145,8 +150,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsDagger =
 	{ 168, "168: Stealth | Invisibility" },
 	{ 169, "169: Easy Kill | Masterful Kill" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsDagger(ListSkillsDaggerA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsStaves =
+static const pair<int, LPCSTR> ListSkillsStavesA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 210, "210: Ingle | High Ingle" },
@@ -180,8 +186,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsStaves =
 	{ 238, "238: Spellscreen | High Spellscreen" },
 	{ 239, "239: Necromancy | High Necromancy" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsStaves(ListSkillsStavesA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsShield =
+static const pair<int, LPCSTR> ListSkillsShieldA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 270, "270: Shield Strike | Shield Storm" },
@@ -194,8 +201,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsShield =
 	{ 277, "277: Flight Response | Enhanced Response" },
 	{ 278, "278: Staredown | Showdown" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsShield(ListSkillsShieldA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsMagickShield =
+static const pair<int, LPCSTR> ListSkillsMagickShieldA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 310, "310: Firecounter | Flame Riposte" },
@@ -214,8 +222,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsMagickShield =
 	{ 323, "323: Demonspite | Demonswrath" },
 	{ 324, "324: Holy Aid | Holy Grace" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsMagickShield(ListSkillsMagickShieldA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsBow =
+static const pair<int, LPCSTR> ListSkillsBowA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 350, "350: Threefold Arrow | Fivefold Flurry" },
@@ -228,8 +237,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsBow =
 	{ 357, "357: Puncture Dart | Skewer Dart" },
 	{ 358, "358: Blunting Arrow | Plegic Arrow" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsBow(ListSkillsBowA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsLongbow =
+static const pair<int, LPCSTR> ListSkillsLongbowA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 400, "400: Sixfold Arrow | Tenfold Flurry" },
@@ -242,8 +252,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsLongbow =
 	{ 407, "407: Whirling Arrow | Spiral Arrow" },
 	{ 408, "408: Gamble Draw | Great Gamble" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsLongbow(ListSkillsLongbowA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsMagickBow =
+static const pair<int, LPCSTR> ListSkillsMagickBowA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 359, "359: Threefold Bolt | Sixfold Bolt" },
@@ -256,8 +267,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsMagickBow =
 	{ 366, "366: Bracer Arrow | Great Bracer Arrow" },
 	{ 367, "367: Sacrificial Bolt | Great Sacrifice" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsMagickBow(ListSkillsMagickBowA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListSkillsAugments =
+static const pair<int, LPCSTR> ListSkillsAugmentsA[] =
 {
 	{ -1, "-1: Empty" },
 	{ 0, "0: Fitness" },
@@ -343,8 +355,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListSkillsAugments =
 	{ 113, "113: Grace" },
 	{ 114, "114: Facility" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListSkillsAugments(ListSkillsAugmentsA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListItemMaster =
+static const pair<int, LPCSTR> ListItemMasterA[] =
 {
 	{ 0, "0: Maximum Health" },
 	{ 1, "1: Maximum Stamina" },
@@ -371,8 +384,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListItemMaster =
 	{ 22, "22: Petrifaction Resistance" },
 	{ 23, "23: Silence Resistance" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListItemMaster(ListItemMasterA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListItemEnchant =
+static const pair<int, LPCSTR> ListItemEnchantA[] =
 {
 	{ 40, "40: Blitz Strike" },
 	{ 42, "42: Downcrush" },
@@ -434,8 +448,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListItemEnchant =
 	{ 407, "407: Corkscrew Arrow " },
 	{ 65535, "65535: Empty" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListItemEnchant(ListItemEnchantA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListItemBonus =
+static const pair<int, LPCSTR> ListItemBonusA[] =
 {
 	{ 0, "0: Extends duration of equipped Skills" },
 	{ 1, "1: Boosts Strength when you've been noticed by a large group of enemies" },
@@ -456,8 +471,9 @@ const vector<pair<int, LPCSTR>> Hooks::ListItemBonus =
 	{ 16, "16: Prevents wind from affecting mobility" },
 	{ 65535, "65535: Empty" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListItemBonus(ListItemBonusA);
 
-const vector<pair<int, LPCSTR>> Hooks::ListItemId =
+static const pair<int, LPCSTR> ListItemIdA[] =
 {
 	{ 0, "0: Airtight Flask" },
 	{ 1, "1: Scrag of Beast" },
@@ -2362,3 +2378,4 @@ const vector<pair<int, LPCSTR>> Hooks::ListItemId =
 	{ 1900, "1900: Shield Enchanter's Band" },
 	{ 1901, "1901: Used" }
 };
+const span<const pair<int, LPCSTR>> Hooks::ListItemId(ListItemIdA);

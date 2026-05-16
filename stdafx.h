@@ -209,12 +209,6 @@ public:
 	T* end() { return arr + len; }
 	const T* end() const { return arr + len; }
 
-	void reserve(size_t n)
-	{
-		if (cap < n)
-			reallocate(n);
-	}
-
 	void push_back(const T &v)
 	{
 		if (cap <= len)
@@ -415,4 +409,25 @@ public:
 	}
 
 	const char *c_str() const { return str; } 
+};
+
+template<class T> class span
+{
+private:
+	T *arr;
+	size_t len;
+
+public:
+	template<size_t N> constexpr span(T (&a)[N]) : arr(a), len(N) { }
+	template<class V> span(const vector<V> &v) : arr(v.data()), len(v.size()) { }
+
+	size_t size() const { return len; }
+	bool empty() const { return len == 0; };
+	T* data() const { return arr; }
+	T& operator[](size_t i) const { return arr[i]; }
+	T& at(size_t i) const { return arr[i]; }
+	T& front() const { return arr[0]; }
+	T& back() const { return arr[len - 1]; }
+	T* begin() const { return arr; };
+	T* end() const { return arr + len; }
 };

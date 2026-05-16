@@ -357,7 +357,9 @@ void renderCheatsAugment(const char *label, float position, int partyId, int ski
 }
 
 bool shareWeaponSkills, ignoreEquipVocation, ignoreSkillVocation;
-vector<pair<int, LPCSTR>> runTypeMapEV = { { -1, "Disabled" },{ 0, "Town Animation" },{ 1, "Town Animation + Stamina" },{ 2, "Stamina" } };
+const pair<int, LPCSTR> runTypeMapEA[] = { { -1, "Disabled" },{ 0, "Town Animation" },{ 1, "Town Animation + Stamina" },{ 2, "Stamina" } };
+const span<const pair<int, LPCSTR>> runTypeMapEV(runTypeMapEA);
+
 void renderCheatsUI()
 {
 	static bool setSkillsOpened = false, setAugmentsOpened = false, setAugmentModsOpened = false, setBuffModsOpened = false;

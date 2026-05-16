@@ -260,7 +260,7 @@ void renderStatsParty(const char *label, int offset, bool *respecShow)
 	ImGui::PopID();
 }
 
-bool renderStatsSkill(int offset, int skillCount, const char *label, const vector<pair<int, LPCSTR>> &items)
+bool renderStatsSkill(int offset, int skillCount, const char *label, const span<const pair<int, LPCSTR>> &items)
 {
 	bool changed = false;
 	if (ImGui::TreeNode(label))
@@ -306,7 +306,7 @@ bool renderStatsSkills(const char *label, int offset, pair<bool, int> *state)
 	return changed;
 }
 
-vector<pair<LPCSTR, const vector<pair<int, LPCSTR>>*>> SkillTypeList =
+const pair<LPCSTR, const span<const pair<int, LPCSTR>>*> SkillTypeListA[] =
 {
 	{ "Sword", &Hooks::ListSkillsSword },
 	{ "Longsword", &Hooks::ListSkillsLongsword },
@@ -320,6 +320,8 @@ vector<pair<LPCSTR, const vector<pair<int, LPCSTR>>*>> SkillTypeList =
 	{ "Core", &Hooks::ListSkillsCore },
 	{ "Augments", &Hooks::ListSkillsAugments }
 };
+const span<const pair<LPCSTR, const span<const pair<int, LPCSTR>>*>> SkillTypeList(SkillTypeListA);
+
 void renderStatsLearnedSkills(const char *label, int offset, pair<bool, int> *state)
 {
 	if (state->first)

@@ -144,7 +144,7 @@ void __declspec(naked) HWeaponSetsS()
 	asm("jmp	*%0" : : "m"(oWeaponSetsS));
 }
 
-bool renderWeaponSkill(int index, int weaponId, int skillCount, const char *label, const vector<pair<int, LPCSTR>> &items)
+bool renderWeaponSkill(int index, int weaponId, int skillCount, const char *label, const span<const pair<int, LPCSTR>> &items)
 {
 	bool changed = false;
 	if (ImGui::TreeNode(label))
