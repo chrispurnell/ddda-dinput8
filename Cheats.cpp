@@ -360,6 +360,13 @@ bool shareWeaponSkills, ignoreEquipVocation, ignoreSkillVocation;
 const pair<int, LPCSTR> runTypeMapEA[] = { { -1, "Disabled" },{ 0, "Town Animation" },{ 1, "Town Animation + Stamina" },{ 2, "Stamina" } };
 const span<const pair<int, LPCSTR>> runTypeMapEV(runTypeMapEA);
 
+const pair<int, LPCSTR> affinityModEA[] =
+{
+	{ Disabled, "Disabled" },{ NoNegative, "No negative changes" },{ AllPositive, "All changes are positive" },
+	{ NoChange, "No changes at all" },{ InstantFriend, "Instant friend (850)" },{ InstantMax, "Instant max (900)" }
+};
+const span<const pair<int, LPCSTR>> affinityModEV(affinityModEA);
+
 void renderCheatsUI()
 {
 	static bool setSkillsOpened = false, setAugmentsOpened = false, setAugmentModsOpened = false, setBuffModsOpened = false;
@@ -625,12 +632,6 @@ void renderCheatsUI()
 		ImGui::Separator();
 		if (ImGui::TreeNode("Affinity mod"))
 		{
-			vector<pair<int, LPCSTR>> affinityModEV =
-			{
-				{ Disabled, "Disabled" },{ NoNegative, "No negative changes" },{ AllPositive, "All changes are positive" },
-				{ NoChange, "No changes at all" },{ InstantFriend, "Instant friend (850)" },{ InstantMax, "Instant max (900)" }
-			};
-
 			if (ImGui::ComboEnum<int>("Mode", &iAffinityMod, affinityModEV))
 				config.setInt("cheats", "affinityMod", iAffinityMod);
 
