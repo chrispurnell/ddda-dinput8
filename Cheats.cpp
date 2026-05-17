@@ -60,20 +60,23 @@ int runType;
 LPBYTE pRunType, oRunType;
 void __declspec(naked) HRunType()
 {
+	asm("call	*%0" : : "m"(oRunType));
+
 	asm("cmpl	$0,%0" : : "m"(runType));
 	asm("je 	1f");
 	asm("cmpl	$2,%0" : : "m"(runType));
 	asm("je 	2f");
+
 	asm("mov	$0x20,%eax");
-	asm("jmp	*%0" : : "m"(oRunType));
+	asm("ret");
 
 	asm("\n1:");
 	asm("and	$0x20,%eax");
-	asm("jmp	*%0" : : "m"(oRunType));
+	asm("ret");
 
 	asm("\n2:");
 	asm("or 	$0x20,%eax");
-	asm("jmp	*%0" : : "m"(oRunType));
+	asm("ret");
 }
 
 float mWeight;
@@ -155,8 +158,7 @@ void __declspec(naked) HIsAugmentEquipped()
 	asm("cmp	$-1,%ecx");
 	asm("je 	3f");
 
-	asm("lea	%0(%%ecx,%%edx,4),%%ecx" : : "m"(augmentsActive));
-	asm("mov	(%ecx),%al");
+	asm("mov	%0(%%ecx,%%edx,4),%%al" : : "m"(augmentsActive));
 	asm("jmp	3f");
 
 	asm("\n2:");
@@ -651,15 +653,13 @@ void Hooks::Cheats()
 {
 	char str[16];
 
-	BYTE sigRun[] = { 0x8B, 0x42, 0x40,			//mov	eax, [edx+40h]
-					0x53,						//push	ebx
-					0x8B, 0x5C, 0x24, 0x08 };	//mov	ebx, [esp+4+arg_0]
+	BYTE sigRun[] = { 0x8B, 0x15, 0xCC, 0xCC, 0xCC, 0xCC, 0x6A, 0x01, 0xE8, 0xCC, 0xCC, 0xCC, 0xCC, 0xC3 };
 	if (FindSignature("Cheat (runType)", sigRun, &pRunType))
 	{
 		runType = config.getInt("cheats", "runType", false);
 		if (runType > 2 || runType < -1)
 			runType = -1;
-		CreateHook("Cheat (runType)", pRunType += 3, (LPVOID)HRunType, &oRunType, runType >= 0);
+		CreateHook("Cheat (runType)", pRunType, (LPVOID)HRunType, &oRunType, runType >= 0);
 	}
 
 	BYTE sigWeight[] = { 0xF3, 0x0F, 0x58, 0xAB, 0x4C, 0x02, 0x00, 0x00,	//addss		xmm5, dword ptr [ebx+24Ch]
